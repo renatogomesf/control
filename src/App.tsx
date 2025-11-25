@@ -1,11 +1,11 @@
+import Login from "./pages/public/Login";
 
 function App() {
-
   return (
     <>
-      <h1 className="text-mint-500">teste</h1>
+      <Login />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
