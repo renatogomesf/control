@@ -4,13 +4,15 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { useState, useRef } from "react";
 import axios from "axios";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+
+  const navigation = useNavigate()
 
   const login = async () => {
     const data = {
@@ -24,10 +26,14 @@ export default function Login() {
         .then((response) => {
           console.log(response.data);
           console.log(response.status);
+
+          if(response.data){
+            //navigation("/register")
+          }
         })
-        .catch((response) => {
-          console.log(response.response.data);
-          console.log(response.status);
+        .catch((erro) => {
+          console.log(erro.response.data);
+          console.log(erro.status);
         });
     } catch (error) {
       console.log(error);
