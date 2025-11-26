@@ -1,7 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --color-mint-500: oklch(0.72 0.11 178);
+  --color-BACKGROUND: #0A0A0A;
+  --color-PRIMARY: #171717;
+  --color-SECONDARY: #212121;
+  --color-TERTIARY: #E5E5E5;
+  --color-QUATERNARY: #434343;
 }
 
 body {

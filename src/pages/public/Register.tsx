@@ -41,20 +41,32 @@ export default function Register() {
   };
 
   return (
-    <div className="h-screen flex justify-center items-center">
-      <div className="flex justify-center items-center rounded-3xl bg-white w-[500px] h-[500px] shadow-2xl">
-        <div className="flex flex-col gap-3">
-          <h1 className="text-2xl text-center font-bold mb-5">Cadastre-se</h1>
-          <div className="flex flex-col gap-3">
-            <Input ref={nameRef} placeholder="Nome" />
-            <Input ref={lastNameRef} placeholder="Sobre nome" />
-            <Input ref={emailRef} placeholder="Email" />
-            <Input ref={passwordRef} placeholder="Senha" />
+    <div className="h-screen flex justify-center items-center text-TERTIARY">
+      <div className="flex justify-center items-center rounded-3xl bg-PRIMARY w-[400px] shadow-2xl">
+        <div className="flex flex-col gap-3 w-[85%]">
+          <div className="my-5">
+            <h1 className="text-xl font-bold">Cadastre-se</h1>
+            <p className="font-extralight">Insira suas informações abaixo para criar sua conta.</p>
+          </div>
+          <div className="flex flex-col gap-6">
+            <Input ref={nameRef} placeholder="Jhon" label="Nome" />
+            <Input ref={lastNameRef} placeholder="Doe" label="Sobre nome" />
+            <Input
+              ref={emailRef}
+              placeholder="email@exemplo.com"
+              label="Email"
+            />
+            <Input
+              ref={passwordRef}
+              label="Senha"
+              type="password"
+              isPassword={true}
+            />
           </div>
 
           <Button className="mt-5" value="Cadastrar" onClick={register} />
 
-          <Link className="underline text-center" to={"/"}>
+          <Link className="underline text-center mb-5 font-extralight" to={"/login"}>
             Voltar
           </Link>
         </div>

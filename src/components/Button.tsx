@@ -2,7 +2,7 @@ export default function Button({ className, onClick, value }: any) {
   return (
     <>
       <input
-        className={`bg-black text-white rounded-2xl p-2.5 w-2xs hover:cursor-pointer font-medium ${className}`}
+        className={`bg-TERTIARY text-PRIMARY rounded-lg px-2.5 py-1.5 w-full hover:cursor-pointer hover:bg-TERTIARY/85 font-medium ${className}`}
         type="button"
         value={value}
         onClick={() => onClick()}

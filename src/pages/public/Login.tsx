@@ -1,18 +1,14 @@
-import { FaEye, FaEyeSlash } from "react-icons/fa6";
-
 import Input from "../../components/Input";
 import Button from "../../components/Button";
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router";
 
 export default function Login() {
-  const [showPassword, setShowPassword] = useState(false);
-
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  const navigation = useNavigate()
+  const navigation = useNavigate();
 
   const login = async () => {
     const data = {
@@ -27,8 +23,8 @@ export default function Login() {
           console.log(response.data);
           console.log(response.status);
 
-          if(response.data){
-            //navigation("/register")
+          if (response.data) {
+            navigation("/");
           }
         })
         .catch((erro) => {
@@ -42,42 +38,39 @@ export default function Login() {
 
   return (
     <div className="h-screen flex justify-center items-center">
-      <div className="flex justify-center items-center rounded-3xl bg-white w-[500px] h-[500px] shadow-2xl">
-        <div className="flex flex-col gap-3">
-          <h1 className="text-2xl text-center font-bold mb-5">Login</h1>
-          <div className="w-min flex flex-col gap-3">
+      <div className="flex justify-center items-center rounded-2xl bg-PRIMARY w-[400px] border border-QUATERNARY text-TERTIARY">
+        <div className="flex flex-col gap-3 w-[85%]">
+          <div className="my-5">
+            <h1 className="text-xl font-bold">Login</h1>
+            <p className="font-extralight">Insira seu e-mail abaixo para acessar sua conta.</p>
+          </div>
+          <div className="flex flex-col gap-6">
             <div>
               <Input
                 ref={emailRef}
                 type="email"
-                placeholder="Email"
+                placeholder="email@exemplo.com"
+                label="Email"
+                isPassword={false}
               />
             </div>
 
             <div className="flex items-center gap-2">
               <Input
                 ref={passwordRef}
-                className="w-full"
-                type={showPassword ? "text" : "password"}
-                placeholder="Senha"
+                type={"password"}
+                label="Senha"
+                isPassword={true}
               />
-              <div
-                className="hover:cursor-pointer"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <FaEyeSlash className="w-5.5 h-5.5" />
-                ) : (
-                  <FaEye className="w-5 h-5" />
-                )}
-              </div>
             </div>
           </div>
-          <Button className="my-5" onClick={login} value="Login"/>
+          <Button className="my-5" onClick={login} value="Login" />
 
-          <p className="text-center">
+          <p className="text-center mb-5 font-extralight">
             Ainda não possui conta?{" "}
-            <Link className="underline" to={"/register"}>Cadastre-se</Link>
+            <Link className="underline" to={"/register"}>
+              Cadastre-se
+            </Link>
           </p>
         </div>
       </div>
