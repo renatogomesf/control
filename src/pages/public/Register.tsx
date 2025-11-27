@@ -46,17 +46,31 @@ export default function Register() {
         <div className="flex flex-col gap-3 w-[85%]">
           <div className="my-5">
             <h1 className="text-xl font-bold">Cadastre-se</h1>
-            <p className="font-extralight">Insira suas informações abaixo para criar sua conta.</p>
+            <p className="font-extralight">
+              Insira suas informações abaixo para criar sua conta.
+            </p>
           </div>
           <div className="flex flex-col gap-6">
-            <Input ref={nameRef} placeholder="Jhon" label="Nome" />
-            <Input ref={lastNameRef} placeholder="Doe" label="Sobre nome" />
             <Input
+              className="w-full"
+              ref={nameRef}
+              placeholder="Jhon"
+              label="Nome"
+            />
+            <Input
+              className="w-full"
+              ref={lastNameRef}
+              placeholder="Doe"
+              label="Sobre nome"
+            />
+            <Input
+              className="w-full"
               ref={emailRef}
               placeholder="email@exemplo.com"
               label="Email"
             />
             <Input
+              className="w-full"
               ref={passwordRef}
               label="Senha"
               type="password"
@@ -66,7 +80,10 @@ export default function Register() {
 
           <Button className="mt-5" value="Cadastrar" onClick={register} />
 
-          <Link className="underline text-center mb-5 font-extralight" to={"/login"}>
+          <Link
+            className="underline text-center mb-5 font-extralight"
+            to={"/login"}
+          >
             Voltar
           </Link>
         </div>

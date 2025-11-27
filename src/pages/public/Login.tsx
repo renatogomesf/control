@@ -42,11 +42,14 @@ export default function Login() {
         <div className="flex flex-col gap-3 w-[85%]">
           <div className="my-5">
             <h1 className="text-xl font-bold">Login</h1>
-            <p className="font-extralight">Insira seu e-mail abaixo para acessar sua conta.</p>
+            <p className="font-extralight">
+              Insira seu e-mail abaixo para acessar sua conta.
+            </p>
           </div>
           <div className="flex flex-col gap-6">
             <div>
               <Input
+                className="w-full"
                 ref={emailRef}
                 type="email"
                 placeholder="email@exemplo.com"
@@ -57,6 +60,7 @@ export default function Login() {
 
             <div className="flex items-center gap-2">
               <Input
+                className="w-full"
                 ref={passwordRef}
                 type={"password"}
                 label="Senha"

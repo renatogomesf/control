@@ -18,7 +18,7 @@ export default function Input({
         <div className="flex items-center gap-3">
           <input
             ref={ref}
-            className={`bg-SECONDARY rounded-lg px-2.5 py-1.5 w-full outline-1 outline-QUATERNARY focus:ring-3 ring-QUATERNARY duration-300 ease-linear ${className}`}
+            className={`bg-SECONDARY rounded-lg px-2.5 py-1.5 outline-1 outline-QUATERNARY focus:ring-3 ring-QUATERNARY duration-300 ease-linear ${className}`}
             type={isPassword ? (showPassword ? "text" : "password") : type}
             placeholder={placeholder}
           />
