@@ -3,9 +3,10 @@ import Button from "../../components/Button";
 import { Link } from "react-router";
 import { useContext, useRef } from "react";
 import { UserContext } from "../../context/UserContext";
+import Toast from "../../components/Toast";
 
 export default function Register() {
-  const { register } = useContext(UserContext);
+  const { register, isPending, controlToast } = useContext(UserContext);
 
   const nameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
@@ -25,6 +26,11 @@ export default function Register() {
 
   return (
     <div className="h-screen flex justify-center items-center text-TERTIARY">
+      <Toast
+        text={controlToast?.text}
+        showToast={controlToast?.showToast}
+        type={controlToast?.type}
+      />
       <div className="flex justify-center items-center rounded-3xl bg-PRIMARY w-[400px] shadow-2xl">
         <div className="flex flex-col gap-3 w-[85%]">
           <div className="my-5">
@@ -37,17 +43,20 @@ export default function Register() {
             <Input
               className="w-full"
               ref={nameRef}
+              type="text"
               placeholder="Jhon"
               label="Nome"
             />
             <Input
               className="w-full"
+              type="text"
               ref={lastNameRef}
               placeholder="Doe"
               label="Sobre nome"
             />
             <Input
               className="w-full"
+              type="email"
               ref={emailRef}
               placeholder="email@exemplo.com"
               label="Email"
@@ -55,13 +64,18 @@ export default function Register() {
             <Input
               className="w-full"
               ref={passwordRef}
-              label="Senha"
               type="password"
+              label="Senha"
               isPassword={true}
             />
           </div>
 
-          <Button className="mt-5" value="Cadastrar" onClick={() => submit()} />
+          <Button
+            className="mt-5"
+            value="Cadastrar"
+            onClick={() => submit()}
+            isPending={isPending}
+          />
 
           <Link
             className="underline text-center mb-5 font-extralight"

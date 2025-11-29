@@ -3,9 +3,10 @@ import Button from "../../components/Button";
 import { useRef, useContext } from "react";
 import { Link } from "react-router";
 import { UserContext } from "../../context/UserContext";
+import Toast from "../../components/Toast";
 
 export default function Login() {
-  const { login } = useContext(UserContext);
+  const { login, isPending, controlToast } = useContext(UserContext);
 
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -21,6 +22,11 @@ export default function Login() {
 
   return (
     <div className="h-screen flex justify-center items-center">
+      <Toast
+        text={controlToast?.text}
+        showToast={controlToast?.showToast}
+        type={controlToast?.type}
+      />
       <div className="flex justify-center items-center rounded-2xl bg-PRIMARY w-[400px] border border-QUATERNARY text-TERTIARY">
         <div className="flex flex-col gap-3 w-[85%]">
           <div className="my-5">
@@ -51,7 +57,12 @@ export default function Login() {
               />
             </div>
           </div>
-          <Button className="my-5" onClick={() => submit()} value="Login" />
+          <Button
+            className="my-5"
+            onClick={() => submit()}
+            value="Login"
+            isPending={isPending}
+          />
 
           <p className="text-center mb-5 font-extralight">
             Ainda não possui conta?{" "}
