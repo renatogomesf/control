@@ -1,39 +1,22 @@
 import Input from "../../components/Input";
 import Button from "../../components/Button";
-import { useRef } from "react";
-import axios from "axios";
-import { Link, useNavigate } from "react-router";
+import { useRef, useContext } from "react";
+import { Link } from "react-router";
+import { UserContext } from "../../context/UserContext";
 
 export default function Login() {
+  const { login } = useContext(UserContext);
+
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  const navigation = useNavigate();
-
-  const login = async () => {
+  const submit = () => {
     const data = {
       email: emailRef.current?.value,
       password: passwordRef.current?.value,
     };
 
-    try {
-      await axios
-        .post("http://localhost:3000/login", data)
-        .then((response) => {
-          console.log(response.data);
-          console.log(response.status);
-
-          if (response.data) {
-            navigation("/");
-          }
-        })
-        .catch((erro) => {
-          console.log(erro.response.data);
-          console.log(erro.status);
-        });
-    } catch (error) {
-      console.log(error);
-    }
+    login(data);
   };
 
   return (
@@ -68,7 +51,7 @@ export default function Login() {
               />
             </div>
           </div>
-          <Button className="my-5" onClick={login} value="Login" />
+          <Button className="my-5" onClick={() => submit()} value="Login" />
 
           <p className="text-center mb-5 font-extralight">
             Ainda não possui conta?{" "}

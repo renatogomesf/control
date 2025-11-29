@@ -1,18 +1,18 @@
 import Input from "../../components/Input";
 import Button from "../../components/Button";
-import { Link, useNavigate } from "react-router";
-import { useRef } from "react";
-import axios from "axios";
+import { Link } from "react-router";
+import { useContext, useRef } from "react";
+import { UserContext } from "../../context/UserContext";
 
 export default function Register() {
+  const { register } = useContext(UserContext);
+
   const nameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  const navigation = useNavigate();
-
-  const register = async () => {
+  const submit = () => {
     const data = {
       name: nameRef.current?.value,
       lastName: lastNameRef.current?.value,
@@ -20,24 +20,7 @@ export default function Register() {
       password: passwordRef.current?.value,
     };
 
-    try {
-      await axios
-        .post("http://localhost:3000/register", data)
-        .then((response) => {
-          console.log(response.data);
-          console.log(response.status);
-
-          if (response.data) {
-            navigation("/");
-          }
-        })
-        .catch((erro) => {
-          console.log(erro.response.data);
-          console.log(erro.status);
-        });
-    } catch (error) {
-      console.log(error);
-    }
+    register(data);
   };
 
   return (
@@ -78,7 +61,7 @@ export default function Register() {
             />
           </div>
 
-          <Button className="mt-5" value="Cadastrar" onClick={register} />
+          <Button className="mt-5" value="Cadastrar" onClick={() => submit()} />
 
           <Link
             className="underline text-center mb-5 font-extralight"

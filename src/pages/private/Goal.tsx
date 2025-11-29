@@ -1,13 +1,32 @@
 import { HiDotsVertical } from "react-icons/hi";
-import { FaTrashAlt, FaSearch } from "react-icons/fa";
+import { FaTrashAlt } from "react-icons/fa";
 import { GrUpdate } from "react-icons/gr";
 import { IoClose } from "react-icons/io5";
 import { useState } from "react";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
+import ModalGoal from "../../components/ModalGoal";
 
 export default function Goal() {
   const [openMenuRow, setOpenMenuRow] = useState<any>(null);
+
+  const [openModal, setOpenModal] = useState(false);
+  const [titleModal, setTitleModal] = useState("");
+  const [buttonModal, setButtonModal] = useState("");
+  const [goalToUpdateModal, setGoalToUpdateModal] = useState(null);
+
+  const modal = (title: string, button: string, goalToUpdate?: any) => {
+    setOpenModal(true);
+    setTitleModal(title);
+    setButtonModal(button);
+    setOpenMenuRow(!openMenuRow);
+
+    if (goalToUpdate !== null) {
+      setGoalToUpdateModal(goalToUpdate);
+    } else {
+      setGoalToUpdateModal(null);
+    }
+  };
 
   const goals = [
     {
@@ -77,7 +96,16 @@ export default function Goal() {
 
   return (
     <>
-      <div className="text-TERTIARY m-3 p-3 rounded-lg">
+      <div className="text-TERTIARY p-6 rounded-lg">
+        {openModal && (
+          <ModalGoal
+            title={titleModal}
+            button={buttonModal}
+            setOpenModal={setOpenModal}
+            goalToUpdateModal={goalToUpdateModal}
+          />
+        )}
+
         <div className="mb-5 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Metas</h1>
@@ -86,7 +114,10 @@ export default function Goal() {
             </p>
           </div>
           <div>
-            <Button value="Criar nova meta" />
+            <Button
+              value="Criar nova meta"
+              onClick={() => modal("Criar nova meta", "Criar meta", null)}
+            />
           </div>
         </div>
         <div className="border border-QUATERNARY rounded-xl px-10 py-10 w-full bg-PRIMARY">
@@ -137,7 +168,12 @@ export default function Goal() {
                               onClick={() => setOpenMenuRow(null)}
                             />
                           </div>
-                          <div className="flex items-center gap-2 px-1.5 rounded-sm hover:bg-PRIMARY hover:cursor-pointer">
+                          <div
+                            className="flex items-center gap-2 px-1.5 rounded-sm hover:bg-PRIMARY hover:cursor-pointer"
+                            onClick={() =>
+                              modal("Atualizar meta", "Atualizar", goal)
+                            }
+                          >
                             <GrUpdate className="w-3 h-3" /> Atualizar
                           </div>
                           <div className="flex items-center gap-2 px-1.5 rounded-sm hover:bg-PRIMARY hover:cursor-pointer">

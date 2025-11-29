@@ -8,6 +8,7 @@ export default function Input({
   ref,
   label,
   isPassword,
+  value
 }: any) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -21,6 +22,8 @@ export default function Input({
             className={`bg-SECONDARY rounded-lg px-2.5 py-1.5 outline-1 outline-QUATERNARY focus:ring-3 ring-QUATERNARY duration-300 ease-linear ${className}`}
             type={isPassword ? (showPassword ? "text" : "password") : type}
             placeholder={placeholder}
+            value={value}
+            step={0.01}
           />
           {isPassword && (
             <div
