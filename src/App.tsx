@@ -4,19 +4,22 @@ import Register from "./pages/public/Register";
 import Layout from "./pages/private/Layout";
 import Goal from "./pages/private/Goal";
 import Revenue from "./pages/private/Revenue";
+import { GoalProvider } from "./context/GoalContext";
 
 function App() {
   return (
     <>
       <div className="bg-BACKGROUND">
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Goal />} />
-            <Route path="revenue" element={<Revenue />} />
-          </Route>
-        </Routes>
+        <GoalProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Goal />} />
+              <Route path="revenue" element={<Revenue />} />
+            </Route>
+          </Routes>
+        </GoalProvider>
       </div>
     </>
   );

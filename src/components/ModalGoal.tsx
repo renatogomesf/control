@@ -2,7 +2,9 @@ import Input from "./Input";
 import Button from "./Button";
 
 import { IoClose } from "react-icons/io5";
-import { useLayoutEffect, useRef } from "react";
+import { useContext, useLayoutEffect, useRef } from "react";
+import { GoalContext } from "../context/GoalContext";
+import { UserContext } from "../context/UserContext";
 
 export default function ModalGoal({
   title,
@@ -10,6 +12,9 @@ export default function ModalGoal({
   setOpenModal,
   goalToUpdateModal,
 }: any) {
+  const { user } = useContext(UserContext);
+  const { createGoal, updateGoal } = useContext(GoalContext);
+
   const goalRef = useRef<HTMLInputElement>(null);
   const currentValueRef = useRef<HTMLInputElement>(null);
   const totalValueRef = useRef<HTMLInputElement>(null);
@@ -25,6 +30,29 @@ export default function ModalGoal({
       totalValueRef.current!.value = "";
     }
   }, [goalToUpdateModal]);
+
+  const create = () => {
+    const data = {
+      goal: goalRef.current?.value,
+      currentValue: currentValueRef.current?.value,
+      totalValue: totalValueRef.current?.value,
+      idUser: user?.idUser,
+    };
+
+    createGoal(data);
+    setOpenModal(false);
+  };
+
+  const update = (idGoal: any) => {
+    const data = {
+      goal: goalRef.current?.value,
+      currentValue: currentValueRef.current?.value,
+      totalValue: totalValueRef.current?.value,
+    };
+
+    updateGoal(idGoal, data);
+    setOpenModal(false);
+  };
 
   return (
     <>
@@ -53,11 +81,17 @@ export default function ModalGoal({
               label="valor total"
             />
           </div>
-          <Button
-            className="mt-6"
-            value={button}
-            onClick={() => setOpenModal(false)}
-          />
+          {title === "Criar nova meta" ? (
+            <Button className="mt-6" value={button} onClick={() => create()} />
+          ) : title === "Atualizar meta" ? (
+            <Button
+              className="mt-6"
+              value={button}
+              onClick={() => update(goalToUpdateModal.idGoal)}
+            />
+          ) : (
+            ""
+          )}
         </div>
       </div>
     </>

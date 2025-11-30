@@ -1,12 +1,15 @@
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, useNavigate } from "react-router";
 import { LuGoal } from "react-icons/lu";
 import { GiReceiveMoney, GiPayMoney } from "react-icons/gi";
 import { FaArrowTrendUp, FaArrowTrendDown } from "react-icons/fa6";
 import { useContext } from "react";
 import { UserContext } from "./../../context/UserContext";
+import { FiLogOut } from "react-icons/fi";
 
 export default function Layout() {
   const { user } = useContext(UserContext);
+
+  const navigation = useNavigate();
 
   const iconStyle = "w-[20px] h-[20px]";
 
@@ -36,6 +39,13 @@ export default function Layout() {
 
   const style = "flex items-center gap-3 px-5 py-1 w-full rounded-lg";
 
+  const logout = () => {
+    localStorage.setItem("user", "");
+    localStorage.setItem("token", "");
+
+    navigation("/login");
+  };
+
   return (
     <>
       <div className="h-screen flex">
@@ -60,10 +70,18 @@ export default function Layout() {
             </nav>
           </div>
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="flex items-center justify-center font-bold text-2xl w-[50px] h-[50px] bg-TERTIARY rounded-full">
-              <span className="text-PRIMARY">{user?.name[0].toUpperCase()}</span>
+            <div className="flex items-center justify-center font-bold text-2xl w-10 h-10 bg-TERTIARY rounded-full">
+              <span className="text-PRIMARY">
+                {user?.name[0].toUpperCase()}
+              </span>
             </div>
             <p className="max-w-[100px]">{user?.name.toUpperCase()}</p>
+            <div
+              className="bg-QUATERNARY p-1 rounded-lg hover:cursor-pointer"
+              onClick={() => logout()}
+            >
+              <FiLogOut className="w-6 h-6" />
+            </div>
           </div>
         </div>
         <main className="overflow-auto h-screen w-screen">
