@@ -2,12 +2,14 @@ import { NavLink, Outlet, useNavigate } from "react-router";
 import { LuGoal } from "react-icons/lu";
 import { GiReceiveMoney, GiPayMoney } from "react-icons/gi";
 import { FaArrowTrendUp, FaArrowTrendDown } from "react-icons/fa6";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { UserContext } from "./../../context/UserContext";
 import { FiLogOut } from "react-icons/fi";
+import { GoalContext } from "../../context/GoalContext";
 
 export default function Layout() {
   const { user } = useContext(UserContext);
+  const { auth, setGoals } = useContext(GoalContext);
 
   const navigation = useNavigate();
 
@@ -42,9 +44,19 @@ export default function Layout() {
   const logout = () => {
     localStorage.setItem("user", "");
     localStorage.setItem("token", "");
-
+    
     navigation("/login");
+    setGoals([])
   };
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+
+    if (!storedUser && !storedToken) {
+      auth();
+    }
+  }, []);
 
   return (
     <>

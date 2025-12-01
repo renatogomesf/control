@@ -1,6 +1,5 @@
-import { createContext, useContext, useState, useTransition } from "react";
+import { createContext, useState, useTransition, type Dispatch, type SetStateAction } from "react";
 import { useNavigate } from "react-router";
-import { UserContext } from "./UserContext";
 import axios from "axios";
 
 type Goal = {
@@ -20,6 +19,8 @@ interface IGoalContext {
   createGoal: (data: any) => Promise<void> | void;
   updateGoal: (idGoal: any, data: any) => Promise<void> | void;
   deleteGoal: (idGoal: any) => Promise<void> | void;
+  auth: () => Promise<void> | void;
+  setGoals: Dispatch<SetStateAction<Goal[] | null>>;
   isPending: boolean;
   isAuthorized: boolean;
 }
@@ -29,61 +30,36 @@ export const GoalContext = createContext({} as IGoalContext);
 export const GoalProvider = ({ children }: { children: React.ReactNode }) => {
   const navigation = useNavigate();
 
-  const { user, token } = useContext(UserContext);
+  const storedUser = localStorage.getItem("user");
+  const storedToken = localStorage.getItem("token");
 
   const [goals, setGoals] = useState<Goal[] | null>([]);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const getGoals = async () => {
-    if (!user || !token) {
-      navigation("/login");
-    }
+  const auth = async () => {
+    if (storedToken) {
+      let token = storedToken;
 
-    startTransition(async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/v1/goal/${user?.idUser}`,
-          {
-            headers: {
-              authorization: token,
-            },
-          }
-        );
-        setGoals(response.data);
-        setIsAuthorized(true);
-      } catch (error: any) {
-        console.log(error.response);
-
-        if (
-          error.response?.data.message == "Authorization required" ||
-          error.response?.data.message == undefined
-        ) {
-          setIsAuthorized(false);
-          navigation("/login");
-        }
-      }
-    });
-  };
-
-  const createGoal = async (data: any) => {
-    if (!user || !token) {
-      return navigation("/login");
-    }
-
-    startTransition(async () => {
-      try {
-        await axios.post(`http://localhost:3000/v1/goal`, data, {
+        const response = await axios.get(`http://localhost:3000/auth`, {
           headers: {
             authorization: token,
           },
         });
 
-        getGoals();
-        setIsAuthorized(true);
-      } catch (error: any) {
-        console.log(error.response);
+        console.log(response);
 
+        if (response.status == 200 && response.data.message === "Authorized") {
+          setIsAuthorized(true);
+        } else if (
+          response.status == 401 &&
+          response.data.message === "Unauthorized"
+        ) {
+          setIsAuthorized(false);
+          navigation("/login");
+        }
+      } catch (error: any) {
         if (
           error.response?.data.message == "Authorization required" ||
           error.response?.data.message == undefined
@@ -91,71 +67,90 @@ export const GoalProvider = ({ children }: { children: React.ReactNode }) => {
           setIsAuthorized(false);
           navigation("/login");
         }
+      }
+    } else {
+      navigation("/login");
+    }
+  };
+
+  const getGoals = async () => {
+    await auth().then(() => {
+      if (storedUser && storedToken) {
+        let user = JSON.parse(storedUser);
+
+        startTransition(async () => {
+          try {
+            const response = await axios.get(
+              `http://localhost:3000/v1/goal/${user?.idUser}`
+            );
+            setGoals(response.data);
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response.data);
+          }
+        });
+      } else {
+        navigation("/login");
+      }
+    });
+  };
+
+  const createGoal = async (data: any) => {
+    await auth().then(() => {
+      if (storedUser && storedToken) {
+        startTransition(async () => {
+          try {
+            await axios.post(`http://localhost:3000/v1/goal`, data);
+
+            getGoals();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
+          }
+        });
       }
     });
   };
 
   const updateGoal = async (idGoal: any, data: any) => {
-    if (!user || !token) {
-      return navigation("/login");
-    }
+    await auth().then(() => {
+      if (storedUser && storedToken) {
+        let user = JSON.parse(storedUser);
 
-    startTransition(async () => {
-      try {
-        await axios.put(
-          `http://localhost:3000/v1/goal/${idGoal}/${user?.idUser}`,
-          data,
-          {
-            headers: {
-              authorization: token,
-            },
+        startTransition(async () => {
+          try {
+            await axios.put(
+              `http://localhost:3000/v1/goal/${idGoal}/${user?.idUser}`,
+              data
+            );
+
+            getGoals();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
           }
-        );
-
-        getGoals();
-        setIsAuthorized(true);
-      } catch (error: any) {
-        console.log(error.response);
-
-        if (
-          error.response?.data.message == "Authorization required" ||
-          error.response?.data.message == undefined
-        ) {
-          setIsAuthorized(false);
-          navigation("/login");
-        }
+        });
       }
     });
   };
 
   const deleteGoal = async (idGoal: any) => {
-    if (!user || !token) {
-      return navigation("/login");
-    }
+    await auth().then(() => {
+      if (storedUser && storedToken) {
+        let user = JSON.parse(storedUser);
 
-    startTransition(async () => {
-      try {
-        await axios.delete(
-          `http://localhost:3000/v1/goal/${idGoal}/${user?.idUser}`,
-          {
-            headers: {
-              authorization: token,
-            },
+        startTransition(async () => {
+          try {
+            await axios.delete(
+              `http://localhost:3000/v1/goal/${idGoal}/${user?.idUser}`
+            );
+
+            getGoals();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
           }
-        );
-
-        getGoals();
-        setIsAuthorized(true);
-      } catch (error: any) {
-        console.log(error.response);
-
-        if (
-          error.response?.data.message == "Authorization required" ||
-          error.response?.data.message == undefined
-        ) {
-          setIsAuthorized(false);
-          navigation("/login");
-        }
+        });
       }
     });
   };
@@ -167,6 +162,8 @@ export const GoalProvider = ({ children }: { children: React.ReactNode }) => {
         createGoal,
         updateGoal,
         deleteGoal,
+        auth,
+        setGoals,
         goals,
         isPending,
         isAuthorized,
