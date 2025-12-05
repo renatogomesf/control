@@ -96,7 +96,7 @@ export default function Layout() {
             </div>
           </div>
         </div>
-        <main className="overflow-auto h-screen w-screen">
+        <main id="main_scroll" className="overflow-auto h-screen w-screen">
           <Outlet />
         </main>
       </div>

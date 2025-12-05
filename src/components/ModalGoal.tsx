@@ -78,7 +78,7 @@ export default function ModalGoal({
               ref={totalValueRef}
               type="number"
               className="w-full"
-              label="valor total"
+              label="Valor total"
             />
           </div>
           {title === "Criar nova meta" ? (

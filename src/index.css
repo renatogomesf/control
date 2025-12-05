@@ -1,13 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --color-BACKGROUND: #0A0A0A;
+  --color-BACKGROUND: #0a0a0a;
   --color-PRIMARY: #171717;
   --color-SECONDARY: #212121;
-  --color-TERTIARY: #E5E5E5;
+  --color-TERTIARY: #e5e5e5;
   --color-QUATERNARY: #434343;
 }
 
 body {
   box-sizing: border-box;
+}
+
+#main_scroll::-webkit-scrollbar {
+  background-color: #171717;
+  width: 7px;
+}
+
+#main_scroll::-webkit-scrollbar-thumb {
+  background-color: #e5e5e5;
+  border-radius: 10px;
 }
