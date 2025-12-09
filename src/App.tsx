@@ -6,10 +6,12 @@ import Goal from "./pages/private/Goal";
 import Revenue from "./pages/private/Revenue";
 import Expense from "./pages/private/Expense";
 import AmountToReceive from "./pages/private/AmountToReceive";
+import AmountToPay from "./pages/private/AmountToPay";
 import { GoalProvider } from "./context/GoalContext";
 import { RevenueProvider } from "./context/RevenueContext";
 import { ExpenseProvider } from "./context/ExpenseContext";
 import { AmountToReceiveProvider } from "./context/AmountToReceiveContext";
+import { AmountToPayProvider } from "./context/AmountToPayContext";
 
 function App() {
   return (
@@ -19,19 +21,22 @@ function App() {
           <RevenueProvider>
             <ExpenseProvider>
               <AmountToReceiveProvider>
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/" element={<Layout />}>
-                    <Route index element={<Goal />} />
-                    <Route path="revenue" element={<Revenue />} />
-                    <Route path="expense" element={<Expense />} />
-                    <Route
-                      path="amounttoreceive"
-                      element={<AmountToReceive />}
-                    />
-                  </Route>
-                </Routes>
+                <AmountToPayProvider>
+                  <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/" element={<Layout />}>
+                      <Route index element={<Goal />} />
+                      <Route path="revenue" element={<Revenue />} />
+                      <Route path="expense" element={<Expense />} />
+                      <Route
+                        path="amounttoreceive"
+                        element={<AmountToReceive />}
+                      />
+                      <Route path="amounttopay" element={<AmountToPay />} />
+                    </Route>
+                  </Routes>
+                </AmountToPayProvider>
               </AmountToReceiveProvider>
             </ExpenseProvider>
           </RevenueProvider>
