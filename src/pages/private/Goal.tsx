@@ -4,9 +4,10 @@ import { GrUpdate } from "react-icons/gr";
 import { IoClose } from "react-icons/io5";
 import { useContext, useEffect, useState } from "react";
 import Button from "../../components/Button";
-import Input from "../../components/Input";
+import InputSearch from "../../components/InputSearch";
 import ModalGoal from "../../components/ModalGoal";
 import LoadingScreen from "../../components/LoadingScreen";
+import Select from "../../components/Select";
 import { MdOutlineFolderOff } from "react-icons/md";
 
 import { GoalContext } from "../../context/GoalContext";
@@ -14,11 +15,25 @@ import { GoalContext } from "../../context/GoalContext";
 export default function Goal() {
   const { getGoals, deleteGoal, goals, isAuthorized } = useContext(GoalContext);
 
+  const [goalteste, setgoalteste] = useState<any>([]);
+
   const [openMenuRow, setOpenMenuRow] = useState<any>(null);
   const [openModal, setOpenModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
   const [buttonModal, setButtonModal] = useState("");
   const [goalToUpdateModal, setGoalToUpdateModal] = useState(null);
+
+  const searchGoal = (search: string) => {
+    console.log(search);
+
+    const resultSearch = goals?.filter((e) => {
+      if (e.goal.includes(search)) {
+        return e;
+      }
+    });
+
+    setgoalteste(resultSearch);
+  };
 
   const modal = (title: string, button: string, goalToUpdate?: any) => {
     setOpenModal(true);
@@ -35,7 +50,9 @@ export default function Goal() {
 
   useEffect(() => {
     getGoals();
-  }, []);
+
+    setgoalteste(goals);
+  }, [goals]);
 
   const goalDelete = (idGaol: any) => {
     deleteGoal(idGaol);
@@ -71,7 +88,13 @@ export default function Goal() {
           {goals!.length > 0 ? (
             <div className="border border-QUATERNARY rounded-xl px-10 py-10 w-full bg-PRIMARY">
               <div className="flex items-center gap-3">
-                <Input className="w-[50%] my-4" placeholder="Buscar..." />
+                <InputSearch
+                  className="w-[50%] my-4"
+                  placeholder="Buscar..."
+                  onChange={(e: any) => searchGoal(e.target.value)}
+                />
+
+                <Select />
               </div>
               <div className="border border-QUATERNARY rounded-xl w-full">
                 <table className="w-full">
@@ -87,7 +110,7 @@ export default function Goal() {
                     </tr>
                   </thead>
                   <tbody>
-                    {goals?.map((goal, index) => {
+                    {goalteste?.map((goal: any, index: any) => {
                       return (
                         <tr
                           key={index}
