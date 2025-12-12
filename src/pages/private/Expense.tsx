@@ -4,9 +4,10 @@ import { GrUpdate } from "react-icons/gr";
 import { IoClose } from "react-icons/io5";
 import { useContext, useEffect, useState } from "react";
 import Button from "../../components/Button";
-import Input from "../../components/Input";
+import InputSearch from "../../components/InputSearch";
 import ModalExpense from "../../components/ModalExpense";
 import LoadingScreen from "../../components/LoadingScreen";
+import Select from "../../components/Select";
 import { MdOutlineFolderOff } from "react-icons/md";
 
 import { ExpenseContext } from "../../context/ExpenseContext";
@@ -15,11 +16,37 @@ export default function Expense() {
   const { getExpenses, deleteExpense, expenses, isAuthorized } =
     useContext(ExpenseContext);
 
+  const [expenseList, setExpenseList] = useState<any>([]);
+  const [selectOption, setSelectOption] = useState("Descrição");
+
   const [openMenuRow, setOpenMenuRow] = useState<any>(null);
   const [openModal, setOpenModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
   const [buttonModal, setButtonModal] = useState("");
   const [expenseToModal, setExpenseToModal] = useState(null);
+
+  const searchExpense = (search: string | number) => {
+    const resultSearch = expenses?.filter((e) => {
+      switch (selectOption) {
+        case "Descrição":
+          if (e.description.includes(search as string)) {
+            return e;
+          }
+          break;
+        case "Valor":
+          if (e.value >= Number(search)) {
+            return e;
+          }
+          break;
+      }
+    });
+
+    setExpenseList(resultSearch);
+  };
+
+  const getSelectOption = (value: any) => {
+    setSelectOption(value);
+  };
 
   const modal = (title: string, button: string, expense?: any) => {
     setOpenModal(true);
@@ -38,7 +65,11 @@ export default function Expense() {
     getExpenses();
   }, []);
 
-  const goalDelete = (idExpense: any) => {
+  useEffect(() => {
+    setExpenseList(expenses);
+  }, [expenses]);
+
+  const expenseDelete = (idExpense: any) => {
     deleteExpense(idExpense);
   };
 
@@ -73,8 +104,17 @@ export default function Expense() {
           </div>
           {expenses!.length > 0 ? (
             <div className="border border-QUATERNARY rounded-xl px-10 py-10 w-full bg-PRIMARY">
-              <div className="flex items-center gap-3">
-                <Input className="w-[50%] my-4" placeholder="Buscar..." />
+              <div className="flex items-center gap-3 w-[50%]">
+                <InputSearch
+                  className="w-full my-4"
+                  placeholder="Buscar..."
+                  onChange={(e: any) => searchExpense(e.target.value)}
+                />
+
+                <Select
+                  getSelectOption={getSelectOption}
+                  options={["Descrição", "Valor"]}
+                />
               </div>
               <div className="border border-QUATERNARY rounded-xl w-full">
                 <table className="w-full">
@@ -89,7 +129,7 @@ export default function Expense() {
                     </tr>
                   </thead>
                   <tbody>
-                    {expenses?.map((expense, index) => {
+                    {expenseList?.map((expense: any, index: any) => {
                       return (
                         <tr
                           key={index}
@@ -137,7 +177,7 @@ export default function Expense() {
                               </div>
                               <div
                                 className="flex items-center gap-2 px-1.5 rounded-sm hover:bg-PRIMARY hover:cursor-pointer"
-                                onClick={() => goalDelete(expense.idExpense)}
+                                onClick={() => expenseDelete(expense.idExpense)}
                               >
                                 <FaTrashAlt className="w-3 h-3" /> Deletar
                               </div>

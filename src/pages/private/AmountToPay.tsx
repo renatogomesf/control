@@ -4,9 +4,10 @@ import { GrUpdate } from "react-icons/gr";
 import { IoClose } from "react-icons/io5";
 import { useContext, useEffect, useState } from "react";
 import Button from "../../components/Button";
-import Input from "../../components/Input";
 import ModalAmountToPay from "../../components/ModalAmountToPay";
 import LoadingScreen from "../../components/LoadingScreen";
+import InputSearch from "../../components/InputSearch";
+import Select from "../../components/Select";
 import { MdOutlineFolderOff } from "react-icons/md";
 
 import { AmountToPayContext } from "../../context/AmountToPayContext";
@@ -15,11 +16,42 @@ export default function AmountToPay() {
   const { getAmountsToPay, deleteAmountToPay, AmountsToPay, isAuthorized } =
     useContext(AmountToPayContext);
 
+  const [amountToPayList, setAmountToPayList] = useState<any>([]);
+  const [selectOption, setSelectOption] = useState("Nome");
+
   const [openMenuRow, setOpenMenuRow] = useState<any>(null);
   const [openModal, setOpenModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
   const [buttonModal, setButtonModal] = useState("");
   const [amountToPayToModal, setAmountToPay] = useState(null);
+
+  const searchAmountToPay = (search: string | number) => {
+    const resultSearch = AmountsToPay?.filter((e) => {
+      switch (selectOption) {
+        case "Nome":
+          if (e.name.includes(search as string)) {
+            return e;
+          }
+          break;
+        case "Descrição":
+          if (e.description.includes(search as string)) {
+            return e;
+          }
+          break;
+        case "Valor":
+          if (e.value >= Number(search)) {
+            return e;
+          }
+          break;
+      }
+    });
+
+    setAmountToPayList(resultSearch);
+  };
+
+  const getSelectOption = (value: any) => {
+    setSelectOption(value);
+  };
 
   const modal = (title: string, button: string, AmountToPay?: any) => {
     setOpenModal(true);
@@ -38,7 +70,11 @@ export default function AmountToPay() {
     getAmountsToPay();
   }, []);
 
-  const goalDelete = (idAmountToPay: any) => {
+  useEffect(() => {
+    setAmountToPayList(AmountsToPay);
+  }, [AmountsToPay]);
+
+  const amountToPayDelete = (idAmountToPay: any) => {
     deleteAmountToPay(idAmountToPay);
   };
 
@@ -65,16 +101,23 @@ export default function AmountToPay() {
             <div>
               <Button
                 value="Criar novo valor"
-                onClick={() =>
-                  modal("Criar novo valor", "Criar valor", null)
-                }
+                onClick={() => modal("Criar novo valor", "Criar valor", null)}
               />
             </div>
           </div>
           {AmountsToPay!.length > 0 ? (
             <div className="border border-QUATERNARY rounded-xl px-10 py-10 w-full bg-PRIMARY">
-              <div className="flex items-center gap-3">
-                <Input className="w-[50%] my-4" placeholder="Buscar..." />
+              <div className="flex items-center gap-3 w-[50%]">
+                <InputSearch
+                  className="w-full my-4"
+                  placeholder="Buscar..."
+                  onChange={(e: any) => searchAmountToPay(e.target.value)}
+                />
+
+                <Select
+                  getSelectOption={getSelectOption}
+                  options={["Nome", "Descrição", "Valor"]}
+                />
               </div>
               <div className="border border-QUATERNARY rounded-xl w-full">
                 <table className="w-full">
@@ -90,7 +133,7 @@ export default function AmountToPay() {
                     </tr>
                   </thead>
                   <tbody>
-                    {AmountsToPay?.map((amountToPay, index) => {
+                    {amountToPayList?.map((amountToPay: any, index: any) => {
                       return (
                         <tr
                           key={index}
@@ -138,7 +181,9 @@ export default function AmountToPay() {
                               </div>
                               <div
                                 className="flex items-center gap-2 px-1.5 rounded-sm hover:bg-PRIMARY hover:cursor-pointer"
-                                onClick={() => goalDelete(amountToPay.idAmountToPay)}
+                                onClick={() =>
+                                  amountToPayDelete(amountToPay.idAmountToPay)
+                                }
                               >
                                 <FaTrashAlt className="w-3 h-3" /> Deletar
                               </div>
@@ -150,7 +195,9 @@ export default function AmountToPay() {
                               : new Date(amountToPay.date).getUTCDate()}
                             /
                             {new Date(amountToPay.date).getUTCMonth() + 1 < 10
-                              ? `0${new Date(amountToPay.date).getUTCMonth() + 1}`
+                              ? `0${
+                                  new Date(amountToPay.date).getUTCMonth() + 1
+                                }`
                               : new Date(amountToPay.date).getUTCMonth() + 1}
                             /{new Date(amountToPay.date).getUTCFullYear()}
                           </td>
@@ -160,10 +207,14 @@ export default function AmountToPay() {
                             R$ {amountToPay.value.toLocaleString()}
                           </td>
                           <td className="p-4">
-                            {new Date(amountToPay.createdAt).toLocaleDateString()}
+                            {new Date(
+                              amountToPay.createdAt
+                            ).toLocaleDateString()}
                           </td>
                           <td className="p-4">
-                            {new Date(amountToPay.updatedAt).toLocaleDateString()}
+                            {new Date(
+                              amountToPay.updatedAt
+                            ).toLocaleDateString()}
                           </td>
                         </tr>
                       );

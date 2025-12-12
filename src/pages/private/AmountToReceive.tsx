@@ -4,22 +4,58 @@ import { GrUpdate } from "react-icons/gr";
 import { IoClose } from "react-icons/io5";
 import { useContext, useEffect, useState } from "react";
 import Button from "../../components/Button";
-import Input from "../../components/Input";
 import ModalAmountToReceive from "../../components/ModalAmountToReceive";
 import LoadingScreen from "../../components/LoadingScreen";
+import InputSearch from "../../components/InputSearch";
+import Select from "../../components/Select";
 import { MdOutlineFolderOff } from "react-icons/md";
 
-import { AmountToReceiveContext } from './../../context/AmountToReceiveContext';
+import { AmountToReceiveContext } from "./../../context/AmountToReceiveContext";
 
 export default function AmountToReceive() {
-  const { getAmountsToReceive, deleteAmountToReceive, AmountsToReceive, isAuthorized } =
-    useContext(AmountToReceiveContext);
+  const {
+    getAmountsToReceive,
+    deleteAmountToReceive,
+    AmountsToReceive,
+    isAuthorized,
+  } = useContext(AmountToReceiveContext);
+
+  const [amountToReceiveList, setAmountToReceiveList] = useState<any>([]);
+  const [selectOption, setSelectOption] = useState("Nome");
 
   const [openMenuRow, setOpenMenuRow] = useState<any>(null);
   const [openModal, setOpenModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
   const [buttonModal, setButtonModal] = useState("");
   const [amountToReceiveToModal, setAmountToReceive] = useState(null);
+
+  const searchAmountToReceive = (search: string | number) => {
+    const resultSearch = AmountsToReceive?.filter((e) => {
+      switch (selectOption) {
+        case "Nome":
+          if (e.name.includes(search as string)) {
+            return e;
+          }
+          break;
+        case "Descrição":
+          if (e.description.includes(search as string)) {
+            return e;
+          }
+          break;
+        case "Valor":
+          if (e.value >= Number(search)) {
+            return e;
+          }
+          break;
+      }
+    });
+
+    setAmountToReceiveList(resultSearch);
+  };
+
+  const getSelectOption = (value: any) => {
+    setSelectOption(value);
+  };
 
   const modal = (title: string, button: string, AmountToReceive?: any) => {
     setOpenModal(true);
@@ -38,7 +74,11 @@ export default function AmountToReceive() {
     getAmountsToReceive();
   }, []);
 
-  const goalDelete = (idAmountToReceive: any) => {
+  useEffect(() => {
+    setAmountToReceiveList(AmountsToReceive);
+  }, [AmountsToReceive]);
+
+  const amountToReceiveDelete = (idAmountToReceive: any) => {
     deleteAmountToReceive(idAmountToReceive);
   };
 
@@ -65,16 +105,23 @@ export default function AmountToReceive() {
             <div>
               <Button
                 value="Criar novo valor"
-                onClick={() =>
-                  modal("Criar novo valor", "Criar valor", null)
-                }
+                onClick={() => modal("Criar novo valor", "Criar valor", null)}
               />
             </div>
           </div>
           {AmountsToReceive!.length > 0 ? (
             <div className="border border-QUATERNARY rounded-xl px-10 py-10 w-full bg-PRIMARY">
-              <div className="flex items-center gap-3">
-                <Input className="w-[50%] my-4" placeholder="Buscar..." />
+              <div className="flex items-center gap-3 w-[50%]">
+                <InputSearch
+                  className="w-full my-4"
+                  placeholder="Buscar..."
+                  onChange={(e: any) => searchAmountToReceive(e.target.value)}
+                />
+
+                <Select
+                  getSelectOption={getSelectOption}
+                  options={["Nome", "Descrição", "Valor"]}
+                />
               </div>
               <div className="border border-QUATERNARY rounded-xl w-full">
                 <table className="w-full">
@@ -90,84 +137,107 @@ export default function AmountToReceive() {
                     </tr>
                   </thead>
                   <tbody>
-                    {AmountsToReceive?.map((amountToReceive, index) => {
-                      return (
-                        <tr
-                          key={index}
-                          className="border-t border-QUATERNARY hover:bg-QUATERNARY/40"
-                        >
-                          <td className="p-4 relative">
-                            <div
-                              className="flex justify-center items-center px-1 py-1 w-fit hover:bg-BACKGROUND rounded-md hover:cursor-pointer"
-                              onClick={() =>
-                                setOpenMenuRow(
-                                  openMenuRow === amountToReceive.idAmountToReceive
-                                    ? null
-                                    : amountToReceive.idAmountToReceive
-                                )
-                              }
-                            >
-                              <HiDotsVertical className=" w-4 h-4" />
-                            </div>
-
-                            <div
-                              className={`flex flex-col gap-2 absolute top-0 -right-10 z-10 border border-QUATERNARY p-2 rounded-lg bg-SECONDARY ${
-                                openMenuRow === amountToReceive.idAmountToReceive
-                                  ? "flex"
-                                  : "hidden"
-                              }`}
-                            >
-                              <div className="flex items-center justify-between">
-                                <p className="px-1.5">Ações:</p>
-                                <IoClose
-                                  className="w-5 h-5 hover:bg-PRIMARY hover:cursor-pointer rounded-sm"
-                                  onClick={() => setOpenMenuRow(null)}
-                                />
-                              </div>
+                    {amountToReceiveList?.map(
+                      (amountToReceive: any, index: any) => {
+                        return (
+                          <tr
+                            key={index}
+                            className="border-t border-QUATERNARY hover:bg-QUATERNARY/40"
+                          >
+                            <td className="p-4 relative">
                               <div
-                                className="flex items-center gap-2 px-1.5 rounded-sm hover:bg-PRIMARY hover:cursor-pointer"
+                                className="flex justify-center items-center px-1 py-1 w-fit hover:bg-BACKGROUND rounded-md hover:cursor-pointer"
                                 onClick={() =>
-                                  modal(
-                                    "Atualizar valor",
-                                    "Atualizar",
-                                    amountToReceive
+                                  setOpenMenuRow(
+                                    openMenuRow ===
+                                      amountToReceive.idAmountToReceive
+                                      ? null
+                                      : amountToReceive.idAmountToReceive
                                   )
                                 }
                               >
-                                <GrUpdate className="w-3 h-3" /> Atualizar
+                                <HiDotsVertical className=" w-4 h-4" />
                               </div>
+
                               <div
-                                className="flex items-center gap-2 px-1.5 rounded-sm hover:bg-PRIMARY hover:cursor-pointer"
-                                onClick={() => goalDelete(amountToReceive.idAmountToReceive)}
+                                className={`flex flex-col gap-2 absolute top-0 -right-10 z-10 border border-QUATERNARY p-2 rounded-lg bg-SECONDARY ${
+                                  openMenuRow ===
+                                  amountToReceive.idAmountToReceive
+                                    ? "flex"
+                                    : "hidden"
+                                }`}
                               >
-                                <FaTrashAlt className="w-3 h-3" /> Deletar
+                                <div className="flex items-center justify-between">
+                                  <p className="px-1.5">Ações:</p>
+                                  <IoClose
+                                    className="w-5 h-5 hover:bg-PRIMARY hover:cursor-pointer rounded-sm"
+                                    onClick={() => setOpenMenuRow(null)}
+                                  />
+                                </div>
+                                <div
+                                  className="flex items-center gap-2 px-1.5 rounded-sm hover:bg-PRIMARY hover:cursor-pointer"
+                                  onClick={() =>
+                                    modal(
+                                      "Atualizar valor",
+                                      "Atualizar",
+                                      amountToReceive
+                                    )
+                                  }
+                                >
+                                  <GrUpdate className="w-3 h-3" /> Atualizar
+                                </div>
+                                <div
+                                  className="flex items-center gap-2 px-1.5 rounded-sm hover:bg-PRIMARY hover:cursor-pointer"
+                                  onClick={() =>
+                                    amountToReceiveDelete(
+                                      amountToReceive.idAmountToReceive
+                                    )
+                                  }
+                                >
+                                  <FaTrashAlt className="w-3 h-3" /> Deletar
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                          <td className="p-4">
-                            {new Date(amountToReceive.date).getUTCDate() < 10
-                              ? `0${new Date(amountToReceive.date).getUTCDate()}`
-                              : new Date(amountToReceive.date).getUTCDate()}
-                            /
-                            {new Date(amountToReceive.date).getUTCMonth() + 1 < 10
-                              ? `0${new Date(amountToReceive.date).getUTCMonth() + 1}`
-                              : new Date(amountToReceive.date).getUTCMonth() + 1}
-                            /{new Date(amountToReceive.date).getUTCFullYear()}
-                          </td>
-                          <td className="p-4">{amountToReceive.name}</td>
-                          <td className="p-4">{amountToReceive.description}</td>
-                          <td className="p-4">
-                            R$ {amountToReceive.value.toLocaleString()}
-                          </td>
-                          <td className="p-4">
-                            {new Date(amountToReceive.createdAt).toLocaleDateString()}
-                          </td>
-                          <td className="p-4">
-                            {new Date(amountToReceive.updatedAt).toLocaleDateString()}
-                          </td>
-                        </tr>
-                      );
-                    })}
+                            </td>
+                            <td className="p-4">
+                              {new Date(amountToReceive.date).getUTCDate() < 10
+                                ? `0${new Date(
+                                    amountToReceive.date
+                                  ).getUTCDate()}`
+                                : new Date(amountToReceive.date).getUTCDate()}
+                              /
+                              {new Date(amountToReceive.date).getUTCMonth() +
+                                1 <
+                              10
+                                ? `0${
+                                    new Date(
+                                      amountToReceive.date
+                                    ).getUTCMonth() + 1
+                                  }`
+                                : new Date(amountToReceive.date).getUTCMonth() +
+                                  1}
+                              /{new Date(amountToReceive.date).getUTCFullYear()}
+                            </td>
+                            <td className="p-4">{amountToReceive.name}</td>
+                            <td className="p-4">
+                              {amountToReceive.description}
+                            </td>
+                            <td className="p-4">
+                              R$ {amountToReceive.value.toLocaleString()}
+                            </td>
+                            <td className="p-4">
+                              {new Date(
+                                amountToReceive.createdAt
+                              ).toLocaleDateString()}
+                            </td>
+                            <td className="p-4">
+                              {new Date(
+                                amountToReceive.updatedAt
+                              ).toLocaleDateString()}
+                            </td>
+                          </tr>
+                        );
+                      }
+                    )}
                   </tbody>
                 </table>
               </div>
