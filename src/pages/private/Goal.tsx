@@ -15,7 +15,8 @@ import { GoalContext } from "../../context/GoalContext";
 export default function Goal() {
   const { getGoals, deleteGoal, goals, isAuthorized } = useContext(GoalContext);
 
-  const [goalteste, setgoalteste] = useState<any>([]);
+  const [goalsList, setGoalList] = useState<any>([]);
+  const [selectOption, setSelectOption] = useState("goal");
 
   const [openMenuRow, setOpenMenuRow] = useState<any>(null);
   const [openModal, setOpenModal] = useState(false);
@@ -23,16 +24,32 @@ export default function Goal() {
   const [buttonModal, setButtonModal] = useState("");
   const [goalToUpdateModal, setGoalToUpdateModal] = useState(null);
 
-  const searchGoal = (search: string) => {
-    console.log(search);
-
+  const searchGoal = (search: string | number) => {
     const resultSearch = goals?.filter((e) => {
-      if (e.goal.includes(search)) {
-        return e;
+      switch (selectOption) {
+        case "Metas":
+          if (e.goal.includes(search as string)) {
+            return e;
+          }
+          break;
+        case "Valor atual":
+          if (e.currentValue >= Number(search)) {
+            return e;
+          }
+          break;
+        case "Valor total":
+          if (e.totalValue >= Number(search)) {
+            return e;
+          }
+          break;
       }
     });
 
-    setgoalteste(resultSearch);
+    setGoalList(resultSearch);
+  };
+
+  const getSelectOption = (value: any) => {
+    setSelectOption(value);
   };
 
   const modal = (title: string, button: string, goalToUpdate?: any) => {
@@ -50,8 +67,10 @@ export default function Goal() {
 
   useEffect(() => {
     getGoals();
+  }, []);
 
-    setgoalteste(goals);
+  useEffect(() => {
+    setGoalList(goals);
   }, [goals]);
 
   const goalDelete = (idGaol: any) => {
@@ -87,14 +106,14 @@ export default function Goal() {
           </div>
           {goals!.length > 0 ? (
             <div className="border border-QUATERNARY rounded-xl px-10 py-10 w-full bg-PRIMARY">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 w-[50%]">
                 <InputSearch
-                  className="w-[50%] my-4"
+                  className="w-full my-4"
                   placeholder="Buscar..."
                   onChange={(e: any) => searchGoal(e.target.value)}
                 />
 
-                <Select />
+                <Select getSelectOption={getSelectOption} options={["Metas", "Valor atual", "Valor total"]} />
               </div>
               <div className="border border-QUATERNARY rounded-xl w-full">
                 <table className="w-full">
@@ -110,7 +129,7 @@ export default function Goal() {
                     </tr>
                   </thead>
                   <tbody>
-                    {goalteste?.map((goal: any, index: any) => {
+                    {goalsList?.map((goal: any, index: any) => {
                       return (
                         <tr
                           key={index}

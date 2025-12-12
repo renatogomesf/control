@@ -1,12 +1,15 @@
-export default function Select() {
+export default function Select({ options, getSelectOption }: any) {
   return (
     <div className="relative">
       <div className="flex items-center gap-2">
         <p className="text-nowrap">Filtrar por: </p>
-        <select className="appearance-none outline-none bg-TERTIARY text-PRIMARY rounded-lg px-2.5 py-1.5 hover:cursor-pointer hover:bg-TERTIARY/85 font-medium pr-8">
-          <option>Meta</option>
-          <option>Valor atual</option>
-          <option>Valor total</option>
+        <select
+          className="appearance-none outline-none bg-TERTIARY text-PRIMARY rounded-lg px-2.5 py-1.5 hover:cursor-pointer hover:bg-TERTIARY/85 font-medium pr-8"
+          onChange={(e) => getSelectOption(e.target.value)}
+        >
+          {options.map((option: any) => {
+            return <option value={option}>{option}</option>;
+          })}
         </select>
       </div>
 
