@@ -16,7 +16,7 @@ export default function Goal() {
   const { getGoals, deleteGoal, goals, isAuthorized } = useContext(GoalContext);
 
   const [goalsList, setGoalList] = useState<any>([]);
-  const [selectOption, setSelectOption] = useState("goal");
+  const [selectOption, setSelectOption] = useState("Metas");
 
   const [openMenuRow, setOpenMenuRow] = useState<any>(null);
   const [openModal, setOpenModal] = useState(false);

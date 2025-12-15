@@ -5,11 +5,22 @@ import { FaArrowTrendUp, FaArrowTrendDown } from "react-icons/fa6";
 import { useContext, useEffect } from "react";
 import { UserContext } from "./../../context/UserContext";
 import { FiLogOut } from "react-icons/fi";
+import { AuthContext } from "../../context/AuthContext";
 import { GoalContext } from "../../context/GoalContext";
+import { RevenueContext } from "../../context/RevenueContext";
+import { ExpenseContext } from "../../context/ExpenseContext";
+import { AmountToReceiveContext } from "../../context/AmountToReceiveContext";
+import { AmountToPayContext } from "./../../context/AmountToPayContext";
 
 export default function Layout() {
+  const { auth } = useContext(AuthContext);
+
   const { user } = useContext(UserContext);
-  const { auth, setGoals } = useContext(GoalContext);
+  const { setGoals } = useContext(GoalContext);
+  const { setRevenue } = useContext(RevenueContext);
+  const { setExpense } = useContext(ExpenseContext);
+  const { setAmountToReceive } = useContext(AmountToReceiveContext);
+  const { setAmountToPay } = useContext(AmountToPayContext);
 
   const navigation = useNavigate();
 
@@ -42,11 +53,15 @@ export default function Layout() {
   const style = "flex items-center gap-3 px-5 py-1 w-full rounded-lg";
 
   const logout = () => {
-    localStorage.setItem("user", "");
-    localStorage.setItem("token", "");
-    
+    localStorage.clear();
+
     navigation("/login");
-    setGoals([])
+
+    setGoals([]);
+    setRevenue([]);
+    setExpense([]);
+    setAmountToReceive([]);
+    setAmountToPay([]);
   };
 
   useEffect(() => {
@@ -81,17 +96,21 @@ export default function Layout() {
               })}
             </nav>
           </div>
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="flex items-center justify-center font-bold text-2xl w-10 h-10 bg-TERTIARY rounded-full">
-              <span className="text-PRIMARY">
-                {user?.name[0].toUpperCase()}
-              </span>
+          <div className="flex flex-col items-center justify-center gap-3 mb-6">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center font-bold text-2xl w-10 h-10 bg-TERTIARY rounded-full">
+                <span className="text-PRIMARY">
+                  {user?.name[0].toUpperCase()}
+                  {user?.lastName[0].toUpperCase()}
+                </span>
+              </div>
+              <p className="max-w-[100px]">{user?.name.toUpperCase()}</p>
             </div>
-            <p className="max-w-[100px]">{user?.name.toUpperCase()}</p>
             <div
-              className="bg-QUATERNARY p-1 rounded-lg hover:cursor-pointer"
+              className="flex gap-2 px-2 bg-QUATERNARY p-1 rounded-lg hover:cursor-pointer"
               onClick={() => logout()}
             >
+              <p>Sair</p>
               <FiLogOut className="w-6 h-6" />
             </div>
           </div>

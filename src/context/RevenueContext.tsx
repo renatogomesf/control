@@ -7,6 +7,8 @@ import {
 } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
+import { useContext } from "react";
+import { AuthContext } from "./AuthContext";
 
 type Revenue = {
   idRevenue: number;
@@ -20,12 +22,10 @@ type Revenue = {
 
 interface IRevenueContext {
   revenues: Revenue[] | null;
-  token?: string;
   getRevenues: () => Promise<void> | void;
   createRevenue: (data: any) => Promise<void> | void;
   updateRevenue: (idGoal: any, data: any) => Promise<void> | void;
   deleteRevenue: (idGoal: any) => Promise<void> | void;
-  auth: () => Promise<void> | void;
   setRevenue: Dispatch<SetStateAction<Revenue[] | null>>;
   isPending: boolean;
   isAuthorized: boolean;
@@ -38,6 +38,8 @@ export const RevenueProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const { auth, isAuth } = useContext(AuthContext);
+
   const navigation = useNavigate();
 
   const storedUser = localStorage.getItem("user");
@@ -47,129 +49,86 @@ export const RevenueProvider = ({
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const auth = async () => {
-    if (storedToken) {
-      let token = storedToken;
+  const getRevenues = async () => {
+    await auth();
 
-      try {
-        const response = await axios.get(`http://localhost:3000/auth`, {
-          headers: {
-            authorization: token,
-          },
-        });
+    if (storedUser && storedToken && isAuth) {
+      let user = JSON.parse(storedUser);
 
-        console.log(response);
-
-        if (response.status == 200 && response.data.message === "Authorized") {
+      startTransition(async () => {
+        try {
+          const response = await axios.get(
+            `http://localhost:3000/v1/revenue/${user?.idUser}`
+          );
+          setRevenue(response.data);
           setIsAuthorized(true);
-        } else if (
-          response.status == 401 &&
-          response.data.message === "Unauthorized"
-        ) {
-          setIsAuthorized(false);
-          navigation("/login");
+        } catch (error: any) {
+          console.log(error.response.data);
         }
-      } catch (error: any) {
-        console.log(error.response.data.message.name);
-
-        if (
-          (error.response.status == 401 &&
-            error.response?.data.message == "Authorization required") ||
-          (error.response.status == 401 &&
-            error.response.data.message === "Unauthorized") ||
-          (error.response.status == 401 &&
-            error.response.data.message.name === "TokenExpiredError") ||
-          error.response?.data.message == undefined
-        ) {
-          setIsAuthorized(false);
-          navigation("/login");
-        }
-      }
+      });
     } else {
       navigation("/login");
     }
   };
 
-  const getRevenues = async () => {
-    await auth().then(() => {
-      if (storedUser && storedToken) {
-        let user = JSON.parse(storedUser);
-
-        startTransition(async () => {
-          try {
-            const response = await axios.get(
-              `http://localhost:3000/v1/revenue/${user?.idUser}`
-            );
-            setRevenue(response.data);
-            setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response.data);
-          }
-        });
-      } else {
-        navigation("/login");
-      }
-    });
-  };
-
   const createRevenue = async (data: any) => {
-    await auth().then(() => {
-      if (storedUser && storedToken) {
-        startTransition(async () => {
-          try {
-            await axios.post(`http://localhost:3000/v1/revenue`, data);
+    await auth();
 
-            getRevenues();
-            setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
-          }
-        });
-      }
-    });
+    if (storedUser && storedToken && isAuth) {
+      startTransition(async () => {
+        try {
+          await axios.post(`http://localhost:3000/v1/revenue`, data);
+
+          getRevenues();
+          setIsAuthorized(true);
+        } catch (error: any) {
+          console.log(error.response);
+        }
+      });
+    }
   };
 
   const updateRevenue = async (idRevenue: any, data: any) => {
-    await auth().then(() => {
-      if (storedUser && storedToken) {
-        let user = JSON.parse(storedUser);
+    await auth();
 
-        startTransition(async () => {
-          try {
-            await axios.put(
-              `http://localhost:3000/v1/revenue/${idRevenue}/${user?.idUser}`,
-              data
-            );
+    if (storedUser && storedToken && isAuth) {
+      let user = JSON.parse(storedUser);
 
-            getRevenues();
-            setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
-          }
-        });
-      }
-    });
+      startTransition(async () => {
+        try {
+          await axios.put(
+            `http://localhost:3000/v1/revenue/${idRevenue}/${user?.idUser}`,
+            data
+          );
+
+          getRevenues();
+          setIsAuthorized(true);
+        } catch (error: any) {
+          console.log(error.response);
+        }
+      });
+    }
   };
 
   const deleteRevenue = async (idRevenue: any) => {
-    await auth().then(() => {
-      if (storedUser && storedToken) {
-        let user = JSON.parse(storedUser);
+    await auth();
 
-        startTransition(async () => {
-          try {
-            await axios.delete(
-              `http://localhost:3000/v1/revenue/${idRevenue}/${user?.idUser}`
-            );
+    if (storedUser && storedToken && isAuth) {
+      let user = JSON.parse(storedUser);
 
-            getRevenues();
-            setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
-          }
-        });
-      }
-    });
+      startTransition(async () => {
+        try {
+          await axios.delete(
+            `http://localhost:3000/v1/revenue/${idRevenue}/${user?.idUser}`
+          );
+
+          getRevenues();
+          setIsAuthorized(true);
+        } catch (error: any) {
+          console.log(error.response);
+        }
+      });
+    }
   };
 
   return (
@@ -179,7 +138,6 @@ export const RevenueProvider = ({
         createRevenue,
         updateRevenue,
         deleteRevenue,
-        auth,
         setRevenue,
         revenues,
         isPending,
