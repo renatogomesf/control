@@ -39,7 +39,7 @@ export const AmountToPayProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { auth, isAuth } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
 
   const navigation = useNavigate();
 
@@ -51,85 +51,85 @@ export const AmountToPayProvider = ({
   const [isPending, startTransition] = useTransition();
 
   const getAmountsToPay = async () => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        let user = JSON.parse(storedUser);
 
-    if (storedUser && storedToken && isAuth) {
-      let user = JSON.parse(storedUser);
-
-      startTransition(async () => {
-        try {
-          const response = await axios.get(
-            `http://localhost:3000/v1/amounttopay/${user?.idUser}`
-          );
-          setAmountToPay(response.data);
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response.data);
-        }
-      });
-    } else {
-      navigation("/login");
-    }
+        startTransition(async () => {
+          try {
+            const response = await axios.get(
+              `http://localhost:3000/v1/amounttopay/${user?.idUser}`
+            );
+            setAmountToPay(response.data);
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response.data);
+          }
+        });
+      } else {
+        navigation("/login");
+      }
+    });
   };
 
   const createAmountToPay = async (data: any) => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        startTransition(async () => {
+          try {
+            await axios.post(`http://localhost:3000/v1/amounttopay`, data);
 
-    if (storedUser && storedToken && isAuth) {
-      startTransition(async () => {
-        try {
-          await axios.post(`http://localhost:3000/v1/amounttopay`, data);
-
-          getAmountsToPay();
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response);
-        }
-      });
-    }
+            getAmountsToPay();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
+          }
+        });
+      }
+    });
   };
 
   const updateAmountToPay = async (idAmountToPay: any, data: any) => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        let user = JSON.parse(storedUser);
 
-    if (storedUser && storedToken && isAuth) {
-      let user = JSON.parse(storedUser);
+        startTransition(async () => {
+          try {
+            await axios.put(
+              `http://localhost:3000/v1/amounttopay/${idAmountToPay}/${user?.idUser}`,
+              data
+            );
 
-      startTransition(async () => {
-        try {
-          await axios.put(
-            `http://localhost:3000/v1/amounttopay/${idAmountToPay}/${user?.idUser}`,
-            data
-          );
-
-          getAmountsToPay();
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response);
-        }
-      });
-    }
+            getAmountsToPay();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
+          }
+        });
+      }
+    });
   };
 
   const deleteAmountToPay = async (idAmountToPay: any) => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        let user = JSON.parse(storedUser);
 
-    if (storedUser && storedToken && isAuth) {
-      let user = JSON.parse(storedUser);
+        startTransition(async () => {
+          try {
+            await axios.delete(
+              `http://localhost:3000/v1/amounttopay/${idAmountToPay}/${user?.idUser}`
+            );
 
-      startTransition(async () => {
-        try {
-          await axios.delete(
-            `http://localhost:3000/v1/amounttopay/${idAmountToPay}/${user?.idUser}`
-          );
-
-          getAmountsToPay();
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response);
-        }
-      });
-    }
+            getAmountsToPay();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
+          }
+        });
+      }
+    });
   };
 
   return (

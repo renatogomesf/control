@@ -38,7 +38,7 @@ export const RevenueProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { auth, isAuth } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
 
   const navigation = useNavigate();
 
@@ -50,85 +50,85 @@ export const RevenueProvider = ({
   const [isPending, startTransition] = useTransition();
 
   const getRevenues = async () => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        let user = JSON.parse(storedUser);
 
-    if (storedUser && storedToken && isAuth) {
-      let user = JSON.parse(storedUser);
-
-      startTransition(async () => {
-        try {
-          const response = await axios.get(
-            `http://localhost:3000/v1/revenue/${user?.idUser}`
-          );
-          setRevenue(response.data);
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response.data);
-        }
-      });
-    } else {
-      navigation("/login");
-    }
+        startTransition(async () => {
+          try {
+            const response = await axios.get(
+              `http://localhost:3000/v1/revenue/${user?.idUser}`
+            );
+            setRevenue(response.data);
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response.data);
+          }
+        });
+      } else {
+        navigation("/login");
+      }
+    });
   };
 
   const createRevenue = async (data: any) => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        startTransition(async () => {
+          try {
+            await axios.post(`http://localhost:3000/v1/revenue`, data);
 
-    if (storedUser && storedToken && isAuth) {
-      startTransition(async () => {
-        try {
-          await axios.post(`http://localhost:3000/v1/revenue`, data);
-
-          getRevenues();
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response);
-        }
-      });
-    }
+            getRevenues();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
+          }
+        });
+      }
+    });
   };
 
   const updateRevenue = async (idRevenue: any, data: any) => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        let user = JSON.parse(storedUser);
 
-    if (storedUser && storedToken && isAuth) {
-      let user = JSON.parse(storedUser);
+        startTransition(async () => {
+          try {
+            await axios.put(
+              `http://localhost:3000/v1/revenue/${idRevenue}/${user?.idUser}`,
+              data
+            );
 
-      startTransition(async () => {
-        try {
-          await axios.put(
-            `http://localhost:3000/v1/revenue/${idRevenue}/${user?.idUser}`,
-            data
-          );
-
-          getRevenues();
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response);
-        }
-      });
-    }
+            getRevenues();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
+          }
+        });
+      }
+    });
   };
 
   const deleteRevenue = async (idRevenue: any) => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        let user = JSON.parse(storedUser);
 
-    if (storedUser && storedToken && isAuth) {
-      let user = JSON.parse(storedUser);
+        startTransition(async () => {
+          try {
+            await axios.delete(
+              `http://localhost:3000/v1/revenue/${idRevenue}/${user?.idUser}`
+            );
 
-      startTransition(async () => {
-        try {
-          await axios.delete(
-            `http://localhost:3000/v1/revenue/${idRevenue}/${user?.idUser}`
-          );
-
-          getRevenues();
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response);
-        }
-      });
-    }
+            getRevenues();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
+          }
+        });
+      }
+    });
   };
 
   return (

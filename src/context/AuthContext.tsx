@@ -1,10 +1,9 @@
-import { createContext, useState } from "react";
+import { createContext } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
 
 interface IAuthContext {
-  auth: () => Promise<void> | void;
-  isAuth: boolean;
+  auth: () => Promise<boolean>;
 }
 
 export const AuthContext = createContext({} as IAuthContext);
@@ -14,9 +13,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const storedToken = localStorage.getItem("token");
 
-  const [isAuth, setIsAuth] = useState(false);
-
   const auth = async () => {
+    let isAuth: boolean = false
+
     if (storedToken) {
       let token = storedToken;
 
@@ -28,12 +27,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
 
         if (response.status == 200 && response.data.message === "Authorized") {
-          setIsAuth(true);
+          isAuth = true;
         } else if (
           response.status == 401 &&
           response.data.message === "Unauthorized"
         ) {
-          setIsAuth(false);
+          isAuth = false;
           navigation("/login");
         }
       } catch (error: any) {
@@ -47,20 +46,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             error.response.data.message.name === "TokenExpiredError") ||
           error.response?.data.message == undefined
         ) {
-          setIsAuth(false);
+          isAuth = false;
           navigation("/login");
         }
       }
     } else {
       navigation("/login");
     }
+
+    return isAuth
   };
 
   return (
     <AuthContext.Provider
       value={{
         auth,
-        isAuth,
       }}
     >
       {children}

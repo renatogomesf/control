@@ -44,7 +44,7 @@ export const AmountToReceiveProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { auth, isAuth } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
 
   const navigation = useNavigate();
 
@@ -58,85 +58,85 @@ export const AmountToReceiveProvider = ({
   const [isPending, startTransition] = useTransition();
 
   const getAmountsToReceive = async () => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        let user = JSON.parse(storedUser);
 
-    if (storedUser && storedToken && isAuth) {
-      let user = JSON.parse(storedUser);
-
-      startTransition(async () => {
-        try {
-          const response = await axios.get(
-            `http://localhost:3000/v1/amounttoreceive/${user?.idUser}`
-          );
-          setAmountToReceive(response.data);
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response.data);
-        }
-      });
-    } else {
-      navigation("/login");
-    }
+        startTransition(async () => {
+          try {
+            const response = await axios.get(
+              `http://localhost:3000/v1/amounttoreceive/${user?.idUser}`
+            );
+            setAmountToReceive(response.data);
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response.data);
+          }
+        });
+      } else {
+        navigation("/login");
+      }
+    });
   };
 
   const createAmountToReceive = async (data: any) => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        startTransition(async () => {
+          try {
+            await axios.post(`http://localhost:3000/v1/amounttoreceive`, data);
 
-    if (storedUser && storedToken && isAuth) {
-      startTransition(async () => {
-        try {
-          await axios.post(`http://localhost:3000/v1/amounttoreceive`, data);
-
-          getAmountsToReceive();
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response);
-        }
-      });
-    }
+            getAmountsToReceive();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
+          }
+        });
+      }
+    });
   };
 
   const updateAmountToReceive = async (idAmountToReceive: any, data: any) => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        let user = JSON.parse(storedUser);
 
-    if (storedUser && storedToken && isAuth) {
-      let user = JSON.parse(storedUser);
+        startTransition(async () => {
+          try {
+            await axios.put(
+              `http://localhost:3000/v1/amounttoreceive/${idAmountToReceive}/${user?.idUser}`,
+              data
+            );
 
-      startTransition(async () => {
-        try {
-          await axios.put(
-            `http://localhost:3000/v1/amounttoreceive/${idAmountToReceive}/${user?.idUser}`,
-            data
-          );
-
-          getAmountsToReceive();
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response);
-        }
-      });
-    }
+            getAmountsToReceive();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
+          }
+        });
+      }
+    });
   };
 
   const deleteAmountToReceive = async (idAmountToReceive: any) => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        let user = JSON.parse(storedUser);
 
-    if (storedUser && storedToken && isAuth) {
-      let user = JSON.parse(storedUser);
+        startTransition(async () => {
+          try {
+            await axios.delete(
+              `http://localhost:3000/v1/amounttoreceive/${idAmountToReceive}/${user?.idUser}`
+            );
 
-      startTransition(async () => {
-        try {
-          await axios.delete(
-            `http://localhost:3000/v1/amounttoreceive/${idAmountToReceive}/${user?.idUser}`
-          );
-
-          getAmountsToReceive();
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response);
-        }
-      });
-    }
+            getAmountsToReceive();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
+          }
+        });
+      }
+    });
   };
 
   return (

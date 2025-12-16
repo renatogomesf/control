@@ -78,8 +78,12 @@ export default function Layout() {
       <div className="h-screen flex">
         <div className="flex flex-col justify-between bg-PRIMARY text-TERTIARY rounded-r-xl">
           <div className="mx-2">
-            <h1 className="text-center font-bold text-3xl my-7">Control</h1>
-            <nav className="flex flex-col w-52 items-center gap-4">
+            <div className="flex items-center justify-center my-6.5">
+              <img className="w-[50px]" src="../../../public/control.png" alt="control" />
+              <h1 className="text-center font-bold text-3xl">Control</h1>
+            </div>
+            <hr className="mb-5" />
+            <nav className="flex flex-col w-52 gap-4">
               {links.map((items) => {
                 return (
                   <NavLink

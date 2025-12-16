@@ -34,7 +34,7 @@ interface IGoalContext {
 export const GoalContext = createContext({} as IGoalContext);
 
 export const GoalProvider = ({ children }: { children: React.ReactNode }) => {
-  const { auth, isAuth } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
 
   const navigation = useNavigate();
 
@@ -46,85 +46,85 @@ export const GoalProvider = ({ children }: { children: React.ReactNode }) => {
   const [isPending, startTransition] = useTransition();
 
   const getGoals = async () => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        let user = JSON.parse(storedUser);
 
-    if (storedUser && storedToken && isAuth) {
-      let user = JSON.parse(storedUser);
-
-      startTransition(async () => {
-        try {
-          const response = await axios.get(
-            `http://localhost:3000/v1/goal/${user?.idUser}`
-          );
-          setGoals(response.data);
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response.data);
-        }
-      });
-    } else {
-      navigation("/login");
-    }
+        startTransition(async () => {
+          try {
+            const response = await axios.get(
+              `http://localhost:3000/v1/goal/${user?.idUser}`
+            );
+            setGoals(response.data);
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response.data);
+          }
+        });
+      } else {
+        navigation("/login");
+      }
+    });
   };
 
   const createGoal = async (data: any) => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        startTransition(async () => {
+          try {
+            await axios.post(`http://localhost:3000/v1/goal`, data);
 
-    if (storedUser && storedToken && isAuth) {
-      startTransition(async () => {
-        try {
-          await axios.post(`http://localhost:3000/v1/goal`, data);
-
-          getGoals();
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response);
-        }
-      });
-    }
+            getGoals();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
+          }
+        });
+      }
+    });
   };
 
   const updateGoal = async (idGoal: any, data: any) => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        let user = JSON.parse(storedUser);
 
-    if (storedUser && storedToken && isAuth) {
-      let user = JSON.parse(storedUser);
+        startTransition(async () => {
+          try {
+            await axios.put(
+              `http://localhost:3000/v1/goal/${idGoal}/${user?.idUser}`,
+              data
+            );
 
-      startTransition(async () => {
-        try {
-          await axios.put(
-            `http://localhost:3000/v1/goal/${idGoal}/${user?.idUser}`,
-            data
-          );
-
-          getGoals();
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response);
-        }
-      });
-    }
+            getGoals();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
+          }
+        });
+      }
+    });
   };
 
   const deleteGoal = async (idGoal: any) => {
-    await auth();
+    await auth().then((isAuth) => {
+      if (storedUser && storedToken && isAuth) {
+        let user = JSON.parse(storedUser);
 
-    if (storedUser && storedToken && isAuth) {
-      let user = JSON.parse(storedUser);
+        startTransition(async () => {
+          try {
+            await axios.delete(
+              `http://localhost:3000/v1/goal/${idGoal}/${user?.idUser}`
+            );
 
-      startTransition(async () => {
-        try {
-          await axios.delete(
-            `http://localhost:3000/v1/goal/${idGoal}/${user?.idUser}`
-          );
-
-          getGoals();
-          setIsAuthorized(true);
-        } catch (error: any) {
-          console.log(error.response);
-        }
-      });
-    }
+            getGoals();
+            setIsAuthorized(true);
+          } catch (error: any) {
+            console.log(error.response);
+          }
+        });
+      }
+    });
   };
 
   return (
