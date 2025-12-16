@@ -66,7 +66,7 @@ export const RevenueProvider = ({
           }
         });
       } else {
-        navigation("/login");
+        navigation("/");
       }
     });
   };

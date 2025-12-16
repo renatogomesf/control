@@ -67,7 +67,7 @@ export const AmountToPayProvider = ({
           }
         });
       } else {
-        navigation("/login");
+        navigation("/");
       }
     });
   };

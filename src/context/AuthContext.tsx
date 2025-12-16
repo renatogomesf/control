@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           response.data.message === "Unauthorized"
         ) {
           isAuth = false;
-          navigation("/login");
+          navigation("/");
         }
       } catch (error: any) {
 
@@ -47,11 +47,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           error.response?.data.message == undefined
         ) {
           isAuth = false;
-          navigation("/login");
+          navigation("/");
         }
       }
     } else {
-      navigation("/login");
+      navigation("/");
     }
 
     return isAuth

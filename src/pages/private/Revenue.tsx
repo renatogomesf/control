@@ -8,6 +8,7 @@ import InputSearch from "../../components/InputSearch";
 import ModalRevenue from "../../components/ModalRevenue";
 import LoadingScreen from "../../components/LoadingScreen";
 import Select from "../../components/Select";
+import InfoCard from "../../components/InfoCard";
 import { MdOutlineFolderOff } from "react-icons/md";
 
 import { RevenueContext } from "../../context/RevenueContext";
@@ -73,6 +74,31 @@ export default function Revenue() {
     deleteRevenue(idGaol);
   };
 
+  const resultSumValue = revenues?.reduce(
+    (accumulator, currentValue) => accumulator + currentValue.value,
+    0
+  );
+
+  const maxValue = () => {
+    let values: number[] = [];
+
+    revenues?.map((item) => {
+      values.push(item.value);
+    });
+
+    return Math.max(...values);
+  };
+
+  const minValue = () => {
+    let values: number[] = [];
+
+    revenues?.map((item) => {
+      values.push(item.value);
+    });
+
+    return Math.min(...values);
+  };
+
   return (
     <>
       {isAuthorized ? (
@@ -102,6 +128,33 @@ export default function Revenue() {
               />
             </div>
           </div>
+
+          <div className="flex flex-wrap gap-5 mb-5">
+            <InfoCard
+              title="Total de receitas"
+              text="Quantidade de receitas registradas"
+              info={`${revenues?.length} receitas`}
+            />
+
+            <InfoCard
+              title="Valor total das receitas"
+              text="Soma de todos os valores"
+              info={`R$ ${resultSumValue?.toLocaleString()}`}
+            />
+
+            <InfoCard
+              title="Maior valor"
+              text="Maior valor recebido"
+              info={`R$ ${maxValue().toLocaleString()}`}
+            />
+
+            <InfoCard
+              title="Menor valor"
+              text="Menor valor recebido"
+              info={`R$ ${minValue().toLocaleString()}`}
+            />
+          </div>
+
           {revenues!.length > 0 ? (
             <div className="border border-QUATERNARY rounded-xl px-10 py-10 w-full bg-PRIMARY">
               <div className="flex items-center gap-3 w-[50%]">

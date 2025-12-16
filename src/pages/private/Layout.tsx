@@ -81,7 +81,7 @@ export default function Layout() {
   return (
     <>
       <div className="h-screen flex">
-        <div className="flex flex-col justify-between bg-PRIMARY text-TERTIARY rounded-r-xl">
+        <div className="flex flex-col justify-between bg-PRIMARY text-TERTIARY rounded-r-xl border-r border-QUATERNARY">
           <div className="mx-2">
             <div className="flex items-center justify-center my-6.5">
               <ControlSVG fill="#e5e5e5" className="w-10 h-10" />
@@ -107,13 +107,22 @@ export default function Layout() {
           </div>
           <div className="flex flex-col items-center justify-center gap-3 mb-6">
             <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center font-bold text-2xl w-10 h-10 bg-TERTIARY rounded-full">
+              <div className="flex items-center justify-center font-bold text-xl w-10 h-10 bg-TERTIARY rounded-full">
                 <span className="text-PRIMARY">
                   {user?.name[0].toUpperCase()}
                   {user?.lastName[0].toUpperCase()}
                 </span>
               </div>
-              <p className="max-w-[100px]">{user?.name.toUpperCase()}</p>
+              <div className="flex gap-1">
+                <p>
+                  {user?.name[0].toUpperCase()}
+                  {user?.name.substring(1).toLowerCase()}
+                </p>
+                <p>
+                  {user?.lastName[0].toUpperCase()}
+                  {user?.lastName.substring(1).toLowerCase()}
+                </p>
+              </div>
             </div>
             <div
               className="flex gap-2 px-2 bg-QUATERNARY p-1 rounded-lg hover:cursor-pointer"

@@ -66,7 +66,7 @@ export const ExpenseProvider = ({
           }
         });
       } else {
-        navigation("/login");
+        navigation("/");
       }
     });
   };

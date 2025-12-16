@@ -8,6 +8,7 @@ import InputSearch from "../../components/InputSearch";
 import ModalGoal from "../../components/ModalGoal";
 import LoadingScreen from "../../components/LoadingScreen";
 import Select from "../../components/Select";
+import InfoCard from "../../components/InfoCard";
 import { MdOutlineFolderOff } from "react-icons/md";
 
 import { GoalContext } from "../../context/GoalContext";
@@ -77,6 +78,24 @@ export default function Goal() {
     deleteGoal(idGaol);
   };
 
+  const resultSumCurrentValue = goals?.reduce(
+    (accumulator, currentValue) => accumulator + currentValue.currentValue,
+    0
+  );
+
+  const resultSumTotlaValue = goals?.reduce(
+    (accumulator, currentValue) => accumulator + currentValue.totalValue,
+    0
+  );
+
+  const avgGoal = () => {
+    if (resultSumTotlaValue == 0) {
+      return 0;
+    }
+
+    return (Number(resultSumCurrentValue) / Number(resultSumTotlaValue)) * 100;
+  };
+
   return (
     <>
       {isAuthorized ? (
@@ -104,8 +123,50 @@ export default function Goal() {
               />
             </div>
           </div>
+
+          <div className="flex flex-wrap gap-5 mb-5">
+            <InfoCard
+              title="Total de metas"
+              text="Quantidade de metas registradas"
+              info={`${goals?.length} metas`}
+            />
+
+            <InfoCard
+              title="Valo atual geral"
+              text="Soma de todos os valores atuais"
+              info={`R$ ${resultSumCurrentValue?.toLocaleString()}`}
+            />
+
+            <InfoCard
+              title="Valo total geral"
+              text="Soma de todos os valores totais"
+              info={`R$ ${resultSumTotlaValue?.toLocaleString()}`}
+            />
+
+            <InfoCard
+              title="Progesso geral"
+              text="Indica o quanto do valor total das metas foi cumprido"
+              info={
+                <div className="flex items-center gap-3 mt-3">
+                  <span className="text-xl font-bold text-nowrap">
+                    {avgGoal().toFixed(2)} %
+                  </span>
+                  <div className="w-full max-w-[200px] h-2 border rounded-full">
+                    <div
+                      className="h-full bg-TERTIARY"
+                      style={{
+                        width: `${avgGoal().toFixed(2)}%`,
+                        maxWidth: "100%",
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              }
+            />
+          </div>
+
           {goals!.length > 0 ? (
-            <div className="border border-QUATERNARY rounded-xl px-10 py-10 w-full bg-PRIMARY">
+            <div className="border border-QUATERNARY rounded-xl px-5 py-5 w-full bg-PRIMARY overflow-auto">
               <div className="flex items-center gap-3 w-[50%]">
                 <InputSearch
                   className="w-full my-4"
@@ -113,9 +174,12 @@ export default function Goal() {
                   onChange={(e: any) => searchGoal(e.target.value)}
                 />
 
-                <Select getSelectOption={getSelectOption} options={["Metas", "Valor atual", "Valor total"]} />
+                <Select
+                  getSelectOption={getSelectOption}
+                  options={["Metas", "Valor atual", "Valor total"]}
+                />
               </div>
-              <div className="border border-QUATERNARY rounded-xl w-full">
+              <div className="border border-QUATERNARY rounded-xl w-full overflow-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-QUATERNARY">
@@ -205,6 +269,7 @@ export default function Goal() {
                                   width: `${
                                     (goal.currentValue / goal.totalValue) * 100
                                   }%`,
+                                  maxWidth: "100%",
                                 }}
                               ></div>
                             </div>

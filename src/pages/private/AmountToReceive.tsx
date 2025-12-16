@@ -8,6 +8,7 @@ import ModalAmountToReceive from "../../components/ModalAmountToReceive";
 import LoadingScreen from "../../components/LoadingScreen";
 import InputSearch from "../../components/InputSearch";
 import Select from "../../components/Select";
+import InfoCard from "../../components/InfoCard";
 import { MdOutlineFolderOff } from "react-icons/md";
 
 import { AmountToReceiveContext } from "./../../context/AmountToReceiveContext";
@@ -82,6 +83,31 @@ export default function AmountToReceive() {
     deleteAmountToReceive(idAmountToReceive);
   };
 
+  const resultSumValue = AmountsToReceive?.reduce(
+    (accumulator, currentValue) => accumulator + currentValue.value,
+    0
+  );
+
+  const maxValue = () => {
+    let values: number[] = [];
+
+    AmountsToReceive?.map((item) => {
+      values.push(item.value);
+    });
+
+    return Math.max(...values);
+  };
+
+  const minValue = () => {
+    let values: number[] = [];
+
+    AmountsToReceive?.map((item) => {
+      values.push(item.value);
+    });
+
+    return Math.min(...values);
+  };
+
   return (
     <>
       {isAuthorized ? (
@@ -109,6 +135,33 @@ export default function AmountToReceive() {
               />
             </div>
           </div>
+
+          <div className="flex flex-wrap gap-5 mb-5">
+            <InfoCard
+              title="Total de valores a receber"
+              text="Quantidade de valores registradas"
+              info={`${AmountsToReceive?.length} valores`}
+            />
+
+            <InfoCard
+              title="Valor total a receber"
+              text="Soma de todos os valores a receber"
+              info={`R$ ${resultSumValue?.toLocaleString()}`}
+            />
+
+            <InfoCard
+              title="Maior valor"
+              text="Maior valor a receber"
+              info={`R$ ${maxValue().toLocaleString()}`}
+            />
+
+            <InfoCard
+              title="Menor valor"
+              text="Menor valor a receber"
+              info={`R$ ${minValue().toLocaleString()}`}
+            />
+          </div>
+
           {AmountsToReceive!.length > 0 ? (
             <div className="border border-QUATERNARY rounded-xl px-10 py-10 w-full bg-PRIMARY">
               <div className="flex items-center gap-3 w-[50%]">

@@ -62,7 +62,7 @@ export const GoalProvider = ({ children }: { children: React.ReactNode }) => {
           }
         });
       } else {
-        navigation("/login");
+        navigation("/");
       }
     });
   };

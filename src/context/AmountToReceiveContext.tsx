@@ -74,7 +74,7 @@ export const AmountToReceiveProvider = ({
           }
         });
       } else {
-        navigation("/login");
+        navigation("/");
       }
     });
   };
