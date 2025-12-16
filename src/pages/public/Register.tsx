@@ -79,7 +79,7 @@ export default function Register() {
 
           <Link
             className="underline text-center mb-5 font-extralight"
-            to={"/login"}
+            to={"/"}
           >
             Voltar
           </Link>

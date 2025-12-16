@@ -66,7 +66,7 @@ export default function Revenue() {
   }, []);
 
   useEffect(() => {
-    setRevenueList(revenues);
+    setRevenueList(revenues?.reverse());
   }, [revenues]);
 
   const revenueDelete = (idGaol: any) => {

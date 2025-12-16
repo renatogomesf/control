@@ -71,7 +71,7 @@ export default function AmountToPay() {
   }, []);
 
   useEffect(() => {
-    setAmountToPayList(AmountsToPay);
+    setAmountToPayList(AmountsToPay?.reverse());
   }, [AmountsToPay]);
 
   const amountToPayDelete = (idAmountToPay: any) => {

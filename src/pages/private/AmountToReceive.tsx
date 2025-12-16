@@ -75,7 +75,7 @@ export default function AmountToReceive() {
   }, []);
 
   useEffect(() => {
-    setAmountToReceiveList(AmountsToReceive);
+    setAmountToReceiveList(AmountsToReceive?.reverse());
   }, [AmountsToReceive]);
 
   const amountToReceiveDelete = (idAmountToReceive: any) => {

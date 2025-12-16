@@ -11,6 +11,7 @@ import { RevenueContext } from "../../context/RevenueContext";
 import { ExpenseContext } from "../../context/ExpenseContext";
 import { AmountToReceiveContext } from "../../context/AmountToReceiveContext";
 import { AmountToPayContext } from "./../../context/AmountToPayContext";
+import ControlSVG from "../../components/IconControl";
 
 export default function Layout() {
   const { auth } = useContext(AuthContext);
@@ -27,7 +28,11 @@ export default function Layout() {
   const iconStyle = "w-[20px] h-[20px]";
 
   const links = [
-    { link: "", title: "Metas", icon: <LuGoal className={`${iconStyle}`} /> },
+    {
+      link: "goal",
+      title: "Metas",
+      icon: <LuGoal className={`${iconStyle}`} />,
+    },
     {
       link: "revenue",
       title: "Receita",
@@ -55,7 +60,7 @@ export default function Layout() {
   const logout = () => {
     localStorage.clear();
 
-    navigation("/login");
+    navigation("/");
 
     setGoals([]);
     setRevenue([]);
@@ -79,7 +84,7 @@ export default function Layout() {
         <div className="flex flex-col justify-between bg-PRIMARY text-TERTIARY rounded-r-xl">
           <div className="mx-2">
             <div className="flex items-center justify-center my-6.5">
-              <img className="w-[50px]" src="../../../public/control.png" alt="control" />
+              <ControlSVG fill="#e5e5e5" className="w-10 h-10" />
               <h1 className="text-center font-bold text-3xl">Control</h1>
             </div>
             <hr className="mb-5" />
@@ -115,7 +120,7 @@ export default function Layout() {
               onClick={() => logout()}
             >
               <p>Sair</p>
-              <FiLogOut className="w-6 h-6" />
+              <FiLogOut className="w-5 h-5" />
             </div>
           </div>
         </div>

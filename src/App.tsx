@@ -23,10 +23,10 @@ function App() {
               <AmountToReceiveProvider>
                 <AmountToPayProvider>
                   <Routes>
-                    <Route path="/login" element={<Login />} />
+                    <Route index element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/" element={<Layout />}>
-                      <Route index element={<Goal />} />
+                      <Route path="goal" element={<Goal />} />
                       <Route path="revenue" element={<Revenue />} />
                       <Route path="expense" element={<Expense />} />
                       <Route

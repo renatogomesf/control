@@ -70,7 +70,7 @@ export default function Goal() {
   }, []);
 
   useEffect(() => {
-    setGoalList(goals);
+    setGoalList(goals?.reverse());
   }, [goals]);
 
   const goalDelete = (idGaol: any) => {

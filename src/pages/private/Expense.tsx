@@ -66,7 +66,7 @@ export default function Expense() {
   }, []);
 
   useEffect(() => {
-    setExpenseList(expenses);
+    setExpenseList(expenses?.reverse());
   }, [expenses]);
 
   const expenseDelete = (idExpense: any) => {

@@ -63,7 +63,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         localStorage.setItem("token", authToken);
 
         if (loggedUser && authToken) {
-          navigation("/");
+          navigation("/goal");
         }
       } catch (error: any) {
         if (error.response?.data.message == "All fields are required") {
@@ -125,7 +125,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           }, 5000);
 
           setTimeout(() => {
-            navigation("/login");
+            navigation("/");
           }, 5500);
         }
       } catch (error: any) {
