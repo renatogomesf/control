@@ -29,14 +29,14 @@ export default function Login() {
         type={controlToast?.type}
       />
 
-      <div className="flex bg-TERTIARY rounded-2xl">
-        <div className="flex flex-col items-center justify-center">
+      <div className="flex bg-TERTIARY rounded-2xl m-2">
+        <div className="flex flex-col items-center justify-center max-md:hidden">
           <div className="flex items-center justify-center w-[300px]">
             <ControlSVG fill="#171717" className="w-10 h-10"/>
             <h1 className="text-center font-bold text-3xl">Control</h1>
           </div>
         </div>
-        <div className="flex justify-center items-center rounded-2xl bg-PRIMARY w-[400px] border border-QUATERNARY text-TERTIARY shadow-BACKGROUND shadow-lg">
+        <div className="flex justify-center items-center rounded-2xl md:w-[400px] bg-PRIMARY border border-QUATERNARY text-TERTIARY shadow-BACKGROUND shadow-lg">
           <div className="flex flex-col gap-3 w-[85%]">
             <div className="my-5">
               <h1 className="text-xl font-bold">Login</h1>

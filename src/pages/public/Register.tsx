@@ -25,13 +25,13 @@ export default function Register() {
   };
 
   return (
-    <div className="h-screen flex justify-center items-center text-TERTIARY">
+    <div className="h-screen flex justify-center items-center text-TERTIARY overflow-auto">
       <Toast
         text={controlToast?.text}
         showToast={controlToast?.showToast}
         type={controlToast?.type}
       />
-      <div className="flex justify-center items-center rounded-3xl bg-PRIMARY w-[400px] shadow-2xl">
+      <div className="flex justify-center items-center rounded-3xl bg-PRIMARY m-2 w-[400px]">
         <div className="flex flex-col gap-3 w-[85%]">
           <div className="my-5">
             <h1 className="text-xl font-bold">Cadastre-se</h1>

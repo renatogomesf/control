@@ -7,8 +7,12 @@ export default function Select({ options, getSelectOption }: any) {
           className="appearance-none outline-none bg-TERTIARY text-PRIMARY rounded-lg px-2.5 py-1.5 hover:cursor-pointer hover:bg-TERTIARY/85 font-medium pr-8"
           onChange={(e) => getSelectOption(e.target.value)}
         >
-          {options.map((option: any) => {
-            return <option value={option}>{option}</option>;
+          {options.map((option: any, index: any) => {
+            return (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            );
           })}
         </select>
       </div>

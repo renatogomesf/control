@@ -2,7 +2,9 @@ import { NavLink, Outlet, useNavigate } from "react-router";
 import { LuGoal } from "react-icons/lu";
 import { GiReceiveMoney, GiPayMoney } from "react-icons/gi";
 import { FaArrowTrendUp, FaArrowTrendDown } from "react-icons/fa6";
-import { useContext, useEffect } from "react";
+import { CgMenuRound, CgCloseO } from "react-icons/cg";
+
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "./../../context/UserContext";
 import { FiLogOut } from "react-icons/fi";
 import { AuthContext } from "../../context/AuthContext";
@@ -22,6 +24,8 @@ export default function Layout() {
   const { setExpense } = useContext(ExpenseContext);
   const { setAmountToReceive } = useContext(AmountToReceiveContext);
   const { setAmountToPay } = useContext(AmountToPayContext);
+
+  const [openMenu, setOpenMenu] = useState(false);
 
   const navigation = useNavigate();
 
@@ -81,17 +85,37 @@ export default function Layout() {
   return (
     <>
       <div className="h-screen flex">
-        <div className="flex flex-col justify-between bg-PRIMARY text-TERTIARY rounded-r-xl border-r border-QUATERNARY">
+        <div className={`fixed bg-BACKGROUND/70 w-full h-screen md:hidden ${openMenu ? "max-md:opacity-100 max-md:fixed" : "max-md:opacity-0 max-md:hidden"}`}></div>
+
+        <div className="text-TERTIARY fixed flex justify-between items-center px-2 bg-PRIMARY w-full z-10 md:hidden">
+          <div className="flex items-center my-4">
+            <ControlSVG fill="#e5e5e5" className="w-10 h-10" />
+            <h1 className="text-center font-bold text-3xl">Control</h1>
+          </div>
+          <div className="pr-1" onClick={()=>setOpenMenu(!openMenu)}>
+            {openMenu ? (
+              <CgCloseO className="w-10 h-9" />
+            ) : (
+              <CgMenuRound className="w-10 h-10" />
+            )}
+          </div>
+        </div>
+
+        <div
+          className={`flex flex-col justify-between bg-PRIMARY text-TERTIARY rounded-r-xl border-r border-QUATERNARY max-md:fixed max-md:right-0  max-md:z-1 max-md:rounded-none max-md:border duration-300 ease-linear ${openMenu ? "max-md:top-17" : "max-md:-top-100"} `}
+        >
           <div className="mx-2">
-            <div className="flex items-center justify-center my-6.5">
+            <div className="flex items-center justify-center my-6.5 max-md:hidden">
               <ControlSVG fill="#e5e5e5" className="w-10 h-10" />
               <h1 className="text-center font-bold text-3xl">Control</h1>
             </div>
-            <hr className="mb-5" />
+            <hr className="mb-5 max-md:border-0" />
             <nav className="flex flex-col w-52 gap-4">
-              {links.map((items) => {
+              {links.map((items, index) => {
                 return (
                   <NavLink
+                    key={index}
+                    onClick={()=>setOpenMenu(!openMenu)}
                     to={items.link}
                     className={({ isActive }) =>
                       isActive
@@ -105,7 +129,7 @@ export default function Layout() {
               })}
             </nav>
           </div>
-          <div className="flex flex-col items-center justify-center gap-3 mb-6">
+          <div className="flex flex-col items-center justify-center gap-3 mb-6 max-md:mt-15">
             <div className="flex items-center gap-2">
               <div className="flex items-center justify-center font-bold text-xl w-10 h-10 bg-TERTIARY rounded-full">
                 <span className="text-PRIMARY">
@@ -125,15 +149,18 @@ export default function Layout() {
               </div>
             </div>
             <div
-              className="flex gap-2 px-2 bg-QUATERNARY p-1 rounded-lg hover:cursor-pointer"
+              className="flex items-center justify-center gap-2 px-2 w-[70%] bg-QUATERNARY p-1 rounded-lg hover:cursor-pointer"
               onClick={() => logout()}
             >
-              <p>Sair</p>
+              <p>Logout</p>
               <FiLogOut className="w-5 h-5" />
             </div>
           </div>
         </div>
-        <main id="main_scroll" className="overflow-auto h-screen w-screen">
+        <main
+          id="main_scroll"
+          className="overflow-auto h-screen w-screen max-md:pt-15"
+        >
           <Outlet />
         </main>
       </div>

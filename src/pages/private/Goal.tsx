@@ -99,7 +99,7 @@ export default function Goal() {
   return (
     <>
       {isAuthorized ? (
-        <div className="text-TERTIARY p-6 h-screen">
+        <div className="text-TERTIARY p-6 h-screen max-md:px-2">
           {openModal && (
             <ModalGoal
               title={titleModal}
@@ -166,17 +166,16 @@ export default function Goal() {
           </div>
 
           {goals!.length > 0 ? (
-            <div className="border border-QUATERNARY rounded-xl px-5 py-5 w-full bg-PRIMARY overflow-auto">
-              <div className="flex items-center gap-3 w-[50%]">
-                <InputSearch
-                  className="w-full my-4"
-                  placeholder="Buscar..."
-                  onChange={(e: any) => searchGoal(e.target.value)}
-                />
-
+            <div className="border border-QUATERNARY rounded-xl px-5 py-5 w-full bg-PRIMARY max-md:px-2">
+              <div className="flex items-center gap-3 max-sm:flex-wrap">
                 <Select
                   getSelectOption={getSelectOption}
                   options={["Metas", "Valor atual", "Valor total"]}
+                />
+                <InputSearch
+                  className="w-full max-w-[300px] my-4"
+                  placeholder="Buscar..."
+                  onChange={(e: any) => searchGoal(e.target.value)}
                 />
               </div>
               <div className="border border-QUATERNARY rounded-xl w-full overflow-auto">
@@ -214,7 +213,7 @@ export default function Goal() {
                             </div>
 
                             <div
-                              className={`flex flex-col gap-2 absolute top-0 -right-10 z-10 border border-QUATERNARY p-2 rounded-lg bg-SECONDARY ${
+                              className={`flex flex-col gap-2 absolute -top-13 -right-15 z-10 border border-QUATERNARY p-2 rounded-lg bg-SECONDARY ${
                                 openMenuRow === goal.idGoal ? "flex" : "hidden"
                               }`}
                             >
