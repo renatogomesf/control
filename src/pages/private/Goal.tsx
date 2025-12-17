@@ -99,7 +99,7 @@ export default function Goal() {
   return (
     <>
       {isAuthorized ? (
-        <div className="text-TERTIARY p-6 h-screen max-md:px-2">
+        <div className="text-TERTIARY p-6 max-md:px-2">
           {openModal && (
             <ModalGoal
               title={titleModal}
@@ -110,7 +110,7 @@ export default function Goal() {
           )}
 
           <div className="mb-5 flex items-center justify-between">
-            <div>
+            <div className="mr-2">
               <h1 className="text-2xl font-bold">Metas</h1>
               <p className="font-extralight">
                 Confira aqui todas as suas metas e projetos.
@@ -281,7 +281,7 @@ export default function Goal() {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-[90%]">
+            <div className="flex flex-col items-center justify-center h-[55svh]">
               <MdOutlineFolderOff className="w-25 h-25" />
               <p>Sem metas!</p>
             </div>

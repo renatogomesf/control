@@ -82,6 +82,10 @@ export default function Expense() {
   const maxValue = () => {
     let values: number[] = [];
 
+    if (expenses?.length == 0) {
+      return 0;
+    }
+
     expenses?.map((item) => {
       values.push(item.value);
     });
@@ -91,6 +95,10 @@ export default function Expense() {
 
   const minValue = () => {
     let values: number[] = [];
+
+    if (expenses?.length == 0) {
+      return 0;
+    }
 
     expenses?.map((item) => {
       values.push(item.value);
@@ -102,7 +110,7 @@ export default function Expense() {
   return (
     <>
       {isAuthorized ? (
-        <div className="text-TERTIARY p-6 h-screen max-md:px-2">
+        <div className="text-TERTIARY p-6 max-md:px-2">
           {openModal && (
             <ModalExpense
               title={titleModal}
@@ -113,7 +121,7 @@ export default function Expense() {
           )}
 
           <div className="mb-5 flex items-center justify-between">
-            <div>
+            <div className="mr-2">
               <h1 className="text-2xl font-bold">Despesas</h1>
               <p className="font-extralight">
                 Confira aqui todas as suas despesas.
@@ -263,7 +271,7 @@ export default function Expense() {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-[90%]">
+            <div className="flex flex-col items-center justify-center h-[55svh]">
               <MdOutlineFolderOff className="w-25 h-25" />
               <p>Sem despesa!</p>
             </div>

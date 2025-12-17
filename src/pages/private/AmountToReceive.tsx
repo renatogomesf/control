@@ -91,6 +91,10 @@ export default function AmountToReceive() {
   const maxValue = () => {
     let values: number[] = [];
 
+    if (AmountsToReceive?.length == 0) {
+      return 0;
+    }
+
     AmountsToReceive?.map((item) => {
       values.push(item.value);
     });
@@ -100,6 +104,10 @@ export default function AmountToReceive() {
 
   const minValue = () => {
     let values: number[] = [];
+
+    if (AmountsToReceive?.length == 0) {
+      return 0;
+    }
 
     AmountsToReceive?.map((item) => {
       values.push(item.value);
@@ -111,7 +119,7 @@ export default function AmountToReceive() {
   return (
     <>
       {isAuthorized ? (
-        <div className="text-TERTIARY p-6 h-screen max-md:px-2">
+        <div className="text-TERTIARY p-6 max-md:px-2">
           {openModal && (
             <ModalAmountToReceive
               title={titleModal}
@@ -122,7 +130,7 @@ export default function AmountToReceive() {
           )}
 
           <div className="mb-5 flex items-center justify-between">
-            <div>
+            <div className="mr-2">
               <h1 className="text-2xl font-bold">Valores a receber</h1>
               <p className="font-extralight">
                 Confira aqui todos os valores que você tem a receber.
@@ -295,7 +303,7 @@ export default function AmountToReceive() {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-[90%]">
+            <div className="flex flex-col items-center justify-center h-[55svh]">
               <MdOutlineFolderOff className="w-25 h-25" />
               <p>Sem valores a receber!</p>
             </div>
