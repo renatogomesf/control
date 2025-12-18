@@ -140,26 +140,30 @@ export default function AmountToPay() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-5 mb-5">
+          <div className="flex flex-wrap gap-5 mb-5 max-sm:flex-row max-sm:flex-nowrap max-sm:overflow-auto">
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Total de valores a pagar"
               text="Quantidade de valores registradas"
               info={`${AmountsToPay?.length} valores`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Valor total a pagar"
               text="Soma de todos os valores a pagar"
               info={`R$ ${resultSumValue?.toLocaleString()}`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Maior valor"
               text="Maior valor a pagar"
               info={`R$ ${maxValue().toLocaleString()}`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Menor valor"
               text="Menor valor a pagar"
               info={`R$ ${minValue().toLocaleString()}`}

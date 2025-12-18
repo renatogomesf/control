@@ -137,26 +137,30 @@ export default function Revenue() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-5 mb-5">
+          <div className="flex flex-wrap gap-5 mb-5 max-sm:flex-row max-sm:flex-nowrap max-sm:overflow-auto">
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Total de receitas"
               text="Quantidade de receitas registradas"
               info={`${revenues?.length} receitas`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Valor total das receitas"
               text="Soma de todos os valores"
               info={`R$ ${resultSumValue?.toLocaleString()}`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Maior valor"
               text="Maior valor recebido"
               info={`R$ ${maxValue().toLocaleString()}`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Menor valor"
               text="Menor valor recebido"
               info={`R$ ${minValue().toLocaleString()}`}

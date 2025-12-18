@@ -144,26 +144,30 @@ export default function AmountToReceive() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-5 mb-5">
+          <div className="flex flex-wrap gap-5 mb-5 max-sm:flex-row max-sm:flex-nowrap max-sm:overflow-auto">
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Total de valores a receber"
               text="Quantidade de valores registradas"
               info={`${AmountsToReceive?.length} valores`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Valor total a receber"
               text="Soma de todos os valores a receber"
               info={`R$ ${resultSumValue?.toLocaleString()}`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Maior valor"
               text="Maior valor a receber"
               info={`R$ ${maxValue().toLocaleString()}`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Menor valor"
               text="Menor valor a receber"
               info={`R$ ${minValue().toLocaleString()}`}

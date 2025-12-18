@@ -124,26 +124,30 @@ export default function Goal() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-5 mb-5">
+          <div className="flex flex-wrap gap-5 mb-5 max-sm:flex-row max-sm:flex-nowrap max-sm:overflow-auto">
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Total de metas"
               text="Quantidade de metas registradas"
               info={`${goals?.length} metas`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Valo atual geral"
               text="Soma de todos os valores atuais"
               info={`R$ ${resultSumCurrentValue?.toLocaleString()}`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Valo total geral"
               text="Soma de todos os valores totais"
               info={`R$ ${resultSumTotlaValue?.toLocaleString()}`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Progesso geral"
               text="Indica o quanto do valor total das metas foi cumprido"
               info={

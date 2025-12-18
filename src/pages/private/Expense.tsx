@@ -137,26 +137,30 @@ export default function Expense() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-5 mb-5">
+          <div className="flex flex-wrap gap-5 mb-5 max-sm:flex-row max-sm:flex-nowrap max-sm:overflow-auto">
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Total de despesas"
               text="Quantidade de despesas registradas"
               info={`${expenses?.length} despesas`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Valor total das despesas"
               text="Soma de todos os valores"
               info={`R$ ${resultSumValue?.toLocaleString()}`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Maior valor"
               text="Maior valor gasto"
               info={`R$ ${maxValue().toLocaleString()}`}
             />
 
             <InfoCard
+              className="max-sm:min-w-[250px]"
               title="Menor valor"
               text="Menor valor gasto"
               info={`R$ ${minValue().toLocaleString()}`}

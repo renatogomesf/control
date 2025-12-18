@@ -102,7 +102,7 @@ export default function Layout() {
         </div>
 
         <div
-          className={`flex flex-col justify-between bg-PRIMARY text-TERTIARY rounded-r-xl border-r border-QUATERNARY max-md:fixed max-md:right-0  max-md:z-1 max-md:rounded-none max-md:border duration-300 ease-linear ${openMenu ? "max-md:top-17" : "max-md:-top-100"} `}
+          className={`flex flex-col justify-between max-lg:overflow-x-clip max-lg:overflow-y-auto max-lg:w-[295px] bg-PRIMARY text-TERTIARY rounded-r-xl border-r border-QUATERNARY max-md:fixed max-md:right-0 max-md:w-fit max-md:z-1 max-md:rounded-none max-md:border duration-300 ease-linear ${openMenu ? "max-md:top-17" : "max-md:-top-100"} `}
         >
           <div className="mx-2">
             <div className="flex items-center justify-center my-6.5 max-md:hidden">
@@ -129,7 +129,7 @@ export default function Layout() {
               })}
             </nav>
           </div>
-          <div className="flex flex-col items-center justify-center gap-3 mb-6 max-md:mt-15">
+          <div className="flex flex-col items-center justify-center gap-3 mb-6 mt-15">
             <div className="flex items-center gap-2">
               <div className="flex items-center justify-center font-bold text-xl w-10 h-10 bg-TERTIARY rounded-full">
                 <span className="text-PRIMARY">
