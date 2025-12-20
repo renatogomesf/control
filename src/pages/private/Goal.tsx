@@ -12,9 +12,13 @@ import InfoCard from "../../components/InfoCard";
 import { MdOutlineFolderOff } from "react-icons/md";
 
 import { GoalContext } from "../../context/GoalContext";
+import type { ToastDTO } from "../../dtos/ToastDTO";
+import Toast from "../../components/Toast";
 
 export default function Goal() {
   const { getGoals, deleteGoal, goals, isAuthorized } = useContext(GoalContext);
+
+  const [controlToast, setControlToast] = useState<ToastDTO>();
 
   const [goalsList, setGoalList] = useState<any>([]);
   const [selectOption, setSelectOption] = useState("Metas");
@@ -66,16 +70,90 @@ export default function Goal() {
     }
   };
 
+  const getAllGoals = async () => {
+    await getGoals().then((response) => {
+      if (response == "Goal not found") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Metas não encontrada!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Internal Server Error") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Erro no servidor!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+    });
+  };
+
   useEffect(() => {
-    getGoals();
+    getAllGoals();
   }, []);
 
   useEffect(() => {
     setGoalList(goals?.reverse());
   }, [goals]);
 
-  const goalDelete = (idGaol: any) => {
-    deleteGoal(idGaol);
+  const goalDelete = async (idGaol: any) => {
+    await deleteGoal(idGaol).then((response) => {
+      if (response == "Meta deletada com sucesso!") {
+        setControlToast({
+          showToast: true,
+          type: 1,
+          text: "Meta deletada com sucesso!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Goal not found") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Meta não encontrada!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Internal Server Error") {
+        setControlToast({
+          showToast: true,
+          type: 3,
+          text: "Erro no servidor!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+    });
   };
 
   const resultSumCurrentValue = goals?.reduce(
@@ -88,7 +166,7 @@ export default function Goal() {
     0
   );
 
-  const avgGoal = () => {
+  const overallProgress = () => {
     if (resultSumTotlaValue == 0) {
       return 0;
     }
@@ -98,6 +176,12 @@ export default function Goal() {
 
   return (
     <>
+      <Toast
+        text={controlToast?.text}
+        showToast={controlToast?.showToast}
+        type={controlToast?.type}
+      />
+
       {isAuthorized ? (
         <div className="text-TERTIARY p-6 max-md:px-2">
           {openModal && (
@@ -106,6 +190,7 @@ export default function Goal() {
               button={buttonModal}
               setOpenModal={setOpenModal}
               goalToUpdateModal={goalToUpdateModal}
+              setControlToast={setControlToast}
             />
           )}
 
@@ -119,6 +204,7 @@ export default function Goal() {
             <div>
               <Button
                 value="Criar nova meta"
+                type="button"
                 onClick={() => modal("Criar nova meta", "Criar meta", null)}
               />
             </div>
@@ -153,13 +239,13 @@ export default function Goal() {
               info={
                 <div className="flex items-center gap-3 mt-3">
                   <span className="text-xl font-bold text-nowrap">
-                    {avgGoal().toFixed(2)} %
+                    {overallProgress().toFixed(2)} %
                   </span>
                   <div className="w-full max-w-[200px] h-2 border rounded-full">
                     <div
                       className="h-full bg-TERTIARY"
                       style={{
-                        width: `${avgGoal().toFixed(2)}%`,
+                        width: `${overallProgress().toFixed(2)}%`,
                         maxWidth: "100%",
                       }}
                     ></div>

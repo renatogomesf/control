@@ -2,7 +2,7 @@ import Input from "./Input";
 import Button from "./Button";
 
 import { IoClose } from "react-icons/io5";
-import { useContext, useLayoutEffect, useRef } from "react";
+import { useContext, useLayoutEffect, useState } from "react";
 import { GoalContext } from "../context/GoalContext";
 import { UserContext } from "../context/UserContext";
 
@@ -11,46 +11,203 @@ export default function ModalGoal({
   button,
   setOpenModal,
   goalToUpdateModal,
+  setControlToast,
 }: any) {
   const { user } = useContext(UserContext);
   const { createGoal, updateGoal } = useContext(GoalContext);
 
-  const goalRef = useRef<HTMLInputElement>(null);
-  const currentValueRef = useRef<HTMLInputElement>(null);
-  const totalValueRef = useRef<HTMLInputElement>(null);
+  const [goalInput, setGoalInput] = useState("");
+  const [currentValueInput, setCurrentValueInput] = useState("");
+  const [totalValueInput, setTotalValueInput] = useState("");
+
+  const [goalAlert, setGoalAlert] = useState(false);
+  const [currentValueAlert, setCurrentValueAlert] = useState(false);
+  const [totalValueAlert, setTotalValueAlert] = useState(false);
 
   useLayoutEffect(() => {
     if (goalToUpdateModal !== null) {
-      goalRef.current!.value = goalToUpdateModal.goal;
-      currentValueRef.current!.value = goalToUpdateModal.currentValue;
-      totalValueRef.current!.value = goalToUpdateModal.totalValue;
+      setGoalInput(goalToUpdateModal.goal);
+      setCurrentValueInput(goalToUpdateModal.currentValue);
+      setTotalValueInput(goalToUpdateModal.totalValue);
     } else {
-      goalRef.current!.value = "";
-      currentValueRef.current!.value = "";
-      totalValueRef.current!.value = "";
+      setGoalInput("");
+      setCurrentValueInput("");
+      setTotalValueInput("");
     }
   }, [goalToUpdateModal]);
 
-  const create = () => {
+  const create = async (formData?: any) => {
+    const goal = formData.get("goal");
+    const currentValue = formData.get("currentValue");
+    const totalValue = formData.get("totalValue");
+
+    if (!goal) {
+      setGoalAlert(true);
+    }
+
+    if (!currentValue) {
+      setCurrentValueAlert(true);
+    }
+
+    if (!totalValue) {
+      setTotalValueAlert(true);
+    }
+
+    if (!goal || !currentValue || !totalValue || !user?.idUser) {
+      return;
+    }
+
     const data = {
-      goal: goalRef.current?.value,
-      currentValue: currentValueRef.current?.value,
-      totalValue: totalValueRef.current?.value,
+      goal: goal,
+      currentValue: currentValue,
+      totalValue: totalValue,
       idUser: user?.idUser,
     };
 
-    createGoal(data);
-    setOpenModal(false);
+    await createGoal(data).then((response) => {
+      if (response == "Meta criada com sucesso!") {
+        setControlToast({
+          showToast: true,
+          type: 1,
+          text: "Meta criada com sucesso!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "User not found") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Usuário não encontrado!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "All fields are required") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Preencha todos os campos!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Internal Server Error") {
+        setControlToast({
+          showToast: true,
+          type: 3,
+          text: "Erro no servidor!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+    });
   };
 
-  const update = (idGoal: any) => {
+  const update = async (formData?: any) => {
+    const goal = formData.get("goal");
+    const currentValue = formData.get("currentValue");
+    const totalValue = formData.get("totalValue");
+
+    if (!goal) {
+      setGoalAlert(true);
+    }
+
+    if (!currentValue) {
+      setCurrentValueAlert(true);
+    }
+
+    if (!totalValue) {
+      setTotalValueAlert(true);
+    }
+
+    if (!goal || !currentValue || !totalValue) {
+      return;
+    }
+
     const data = {
-      goal: goalRef.current?.value,
-      currentValue: currentValueRef.current?.value,
-      totalValue: totalValueRef.current?.value,
+      goal: goal,
+      currentValue: currentValue,
+      totalValue: totalValue,
     };
 
-    updateGoal(idGoal, data);
+    await updateGoal(goalToUpdateModal.idGoal, data).then((response) => {
+      if (response == "Meta atualizada com sucesso!") {
+        setControlToast({
+          showToast: true,
+          type: 1,
+          text: "Meta atualizada com sucesso!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Goal not found") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Meta não encontrada!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "All fields are required") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Preencha todos os campos!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Internal Server Error") {
+        setControlToast({
+          showToast: true,
+          type: 3,
+          text: "Erro no servidor!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+    });
+
     setOpenModal(false);
   };
 
@@ -66,32 +223,79 @@ export default function ModalGoal({
             />
           </div>
 
-          <div className="flex flex-col gap-6">
-            <Input ref={goalRef} type="text" className="w-full" label="Meta" />
-            <Input
-              ref={currentValueRef}
-              type="number"
-              className="w-full"
-              label="Valor atual"
-            />
-            <Input
-              ref={totalValueRef}
-              type="number"
-              className="w-full"
-              label="Valor total"
-            />
-          </div>
-          {title === "Criar nova meta" ? (
-            <Button className="mt-6" value={button} onClick={() => create()} />
-          ) : title === "Atualizar meta" ? (
-            <Button
-              className="mt-6"
-              value={button}
-              onClick={() => update(goalToUpdateModal.idGoal)}
-            />
-          ) : (
-            ""
-          )}
+          <form
+            action={
+              title === "Criar nova meta"
+                ? create
+                : title === "Atualizar meta"
+                ? update
+                : ""
+            }
+            className="flex flex-col gap-6"
+          >
+            <div>
+              <Input
+                type="text"
+                className={`w-full ${goalAlert ? "ring-3 ring-red-600" : ""}`}
+                label="Meta"
+                name="goal"
+                defaultValue={goalInput}
+                onFocus={() => setGoalAlert(false)}
+              />
+              {goalAlert ? (
+                <p className="absolute text-[0.7rem] mt-1 text-red-600">
+                  Campo Obrigatório!
+                </p>
+              ) : (
+                ""
+              )}
+            </div>
+            <div>
+              <Input
+                type="number"
+                className={`w-full ${
+                  currentValueAlert ? "ring-3 ring-red-600" : ""
+                }`}
+                label="Valor atual"
+                name="currentValue"
+                defaultValue={currentValueInput}
+                onFocus={() => setCurrentValueAlert(false)}
+              />
+              {currentValueAlert ? (
+                <p className="absolute text-[0.7rem] mt-1 text-red-600">
+                  Campo Obrigatório!
+                </p>
+              ) : (
+                ""
+              )}
+            </div>
+            <div>
+              <Input
+                type="number"
+                className={`w-full ${
+                  totalValueAlert ? "ring-3 ring-red-600" : ""
+                }`}
+                label="Valor total"
+                name="totalValue"
+                defaultValue={totalValueInput}
+                onFocus={() => setTotalValueAlert(false)}
+              />
+              {totalValueAlert ? (
+                <p className="absolute text-[0.7rem] mt-1 text-red-600">
+                  Campo Obrigatório!
+                </p>
+              ) : (
+                ""
+              )}
+            </div>
+            {title === "Criar nova meta" ? (
+              <Button className="mt-6" value={button} type="submit" />
+            ) : title === "Atualizar meta" ? (
+              <Button className="mt-6" value={button} type="submit" />
+            ) : (
+              ""
+            )}
+          </form>
         </div>
       </div>
     </>

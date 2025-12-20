@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useNavigate } from "react-router";
-import { createContext, useEffect, useState, useTransition } from "react";
+import { createContext, useEffect, useState } from "react";
 
 type User = {
   idUser: number;
@@ -9,19 +9,11 @@ type User = {
   email: string;
 };
 
-type Toast = {
-  showToast: boolean;
-  type: number;
-  text: string;
-};
-
 interface IUserContext {
   user: User | null;
   token: string;
-  login: (data: any) => Promise<void> | void;
-  register: (data: any) => Promise<void> | void;
-  isPending: boolean;
-  controlToast: Toast | undefined;
+  login: (data: any) => Promise<string | void>;
+  register: (data: any) => Promise<string | void>;
 }
 
 export const UserContext = createContext({} as IUserContext);
@@ -31,12 +23,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState("");
-
-  const [controlToast, setControlToast] = useState<Toast | undefined>(
-    undefined
-  );
-
-  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -48,125 +34,53 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const login = async (data: any) => {
-    startTransition(async () => {
-      try {
-        const response = await axios.post("http://localhost:3000/login", data);
+  const login = async (data: any): Promise<string | void> => {
+    let message: string = "";
 
-        const loggedUser = response.data?.user;
-        const authToken = response.data?.token;
+    try {
+      const response = await axios.post("http://localhost:3000/login", data);
 
-        setUser(loggedUser);
-        setToken(authToken);
+      const loggedUser = response.data?.user;
+      const authToken = response.data?.token;
 
-        localStorage.setItem("user", JSON.stringify(loggedUser));
-        localStorage.setItem("token", authToken);
+      setUser(loggedUser);
+      setToken(authToken);
 
-        if (loggedUser && authToken) {
-          navigation("/goal");
-        }
-      } catch (error: any) {
-        if (error.response?.data.message == "All fields are required") {
-          setControlToast({
-            showToast: true,
-            type: 2,
-            text: "Preencha todos os campos!",
-          });
+      localStorage.setItem("user", JSON.stringify(loggedUser));
+      localStorage.setItem("token", authToken);
 
-          setTimeout(() => {
-            setControlToast({
-              showToast: false,
-              type: 2,
-              text: "Preencha todos os campos!",
-            });
-          }, 5000);
-        }
-
-        if (error.response?.data.message == "Incorrect email or password") {
-          setControlToast({
-            showToast: true,
-            type: 3,
-            text: "E-mail ou senha incorretos!",
-          });
-
-          setTimeout(() => {
-            setControlToast({
-              showToast: false,
-              type: 3,
-              text: "E-mail ou senha incorretos!",
-            });
-          }, 5000);
-        }
+      if (loggedUser && authToken) {
+        navigation("/goal");
       }
-    });
+    } catch (error: any) {
+      message = error.response?.data.message;
+    }
+
+    return message;
   };
 
-  const register = async (data: any) => {
-    startTransition(async () => {
-      try {
-        const response = await axios.post(
-          "http://localhost:3000/register",
-          data
-        );
+  const register = async (data: any): Promise<string | void> => {
+    let message: string = "";
 
-        if (response.data && response.status == 201) {
-          setControlToast({
-            showToast: true,
-            type: 1,
-            text: "Cadastro criado com sucesso!",
-          });
+    try {
+      const response = await axios.post("http://localhost:3000/register", data);
 
-          setTimeout(() => {
-            setControlToast({
-              showToast: false,
-              type: 1,
-              text: "Cadastro criado com sucesso!",
-            });
-          }, 5000);
-
-          setTimeout(() => {
-            navigation("/");
-          }, 5500);
-        }
-      } catch (error: any) {
-        if (error.response?.data.message == "All fields are required") {
-          setControlToast({
-            showToast: true,
-            type: 2,
-            text: "Preencha todos os campos!",
-          });
-
-          setTimeout(() => {
-            setControlToast({
-              showToast: false,
-              type: 2,
-              text: "Preencha todos os campos!",
-            });
-          }, 5000);
-        }
-
-        if (error.response?.data.message == "Email already registered") {
-          setControlToast({
-            showToast: true,
-            type: 3,
-            text: "Este e-mail já está em uso!",
-          });
-
-          setTimeout(() => {
-            setControlToast({
-              showToast: false,
-              type: 3,
-              text: "Este e-mail já está em uso!",
-            });
-          }, 5000);
-        }
+      if (response.data && response.status == 201) {
+        message = "Cadastro criado com sucesso!";
+        setTimeout(() => {
+          navigation("/");
+        }, 3000);
       }
-    });
+    } catch (error: any) {
+      message = error.response?.data.message;
+    }
+
+    return message;
   };
 
   return (
     <UserContext.Provider
-      value={{ isPending, login, user, token, register, controlToast }}
+      value={{ login, user, token, register }}
     >
       {children}
     </UserContext.Provider>

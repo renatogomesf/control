@@ -1,7 +1,6 @@
 import {
   createContext,
   useState,
-  useTransition,
   type Dispatch,
   type SetStateAction,
 } from "react";
@@ -22,12 +21,11 @@ type Goal = {
 
 interface IGoalContext {
   goals: Goal[] | null;
-  getGoals: () => Promise<void> | void;
-  createGoal: (data: any) => Promise<void> | void;
-  updateGoal: (idGoal: any, data: any) => Promise<void> | void;
-  deleteGoal: (idGoal: any) => Promise<void> | void;
+  getGoals: () => Promise<string | void>;
+  createGoal: (data: any) => Promise<string | void>;
+  updateGoal: (idGoal: any, data: any) => Promise<string | void>;
+  deleteGoal: (idGoal: any) => Promise<string | void>;
   setGoals: Dispatch<SetStateAction<Goal[] | null>>;
-  isPending: boolean;
   isAuthorized: boolean;
 }
 
@@ -43,88 +41,123 @@ export const GoalProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [goals, setGoals] = useState<Goal[] | null>([]);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
-  const getGoals = async () => {
-    await auth().then((isAuth) => {
+  const getGoals = async (): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
+
       if (storedUser && storedToken && isAuth) {
         let user = JSON.parse(storedUser);
 
-        startTransition(async () => {
-          try {
-            const response = await axios.get(
-              `http://localhost:3000/v1/goal/${user?.idUser}`
-            );
+        try {
+          const response = await axios.get(
+            `http://localhost:3000/v1/goal/${user?.idUser}`
+          );
+          if (response.data && response.status == 200) {
             setGoals(response.data);
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response.data);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
       } else {
         navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
-  const createGoal = async (data: any) => {
-    await auth().then((isAuth) => {
-      if (storedUser && storedToken && isAuth) {
-        startTransition(async () => {
-          try {
-            await axios.post(`http://localhost:3000/v1/goal`, data);
+  const createGoal = async (data: any): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
 
+      if (storedUser && storedToken && isAuth) {
+        try {
+          const response = await axios.post(
+            `http://localhost:3000/v1/goal`,
+            data
+          );
+
+          if (response.data && response.status == 201) {
+            message = "Meta criada com sucesso!";
             getGoals();
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
-  const updateGoal = async (idGoal: any, data: any) => {
-    await auth().then((isAuth) => {
-      if (storedUser && storedToken && isAuth) {
-        let user = JSON.parse(storedUser);
+  const updateGoal = async (idGoal: any, data: any): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
 
-        startTransition(async () => {
-          try {
-            await axios.put(
-              `http://localhost:3000/v1/goal/${idGoal}/${user?.idUser}`,
-              data
-            );
-
-            getGoals();
-            setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
-          }
-        });
-      }
-    });
-  };
-
-  const deleteGoal = async (idGoal: any) => {
-    await auth().then((isAuth) => {
       if (storedUser && storedToken && isAuth) {
         let user = JSON.parse(storedUser);
 
-        startTransition(async () => {
-          try {
-            await axios.delete(
-              `http://localhost:3000/v1/goal/${idGoal}/${user?.idUser}`
-            );
+        try {
+          const response = await axios.put(
+            `http://localhost:3000/v1/goal/${idGoal}/${user?.idUser}`,
+            data
+          );
 
+          if (response.data && response.status == 200) {
+            message = "Meta atualizada com sucesso!";
             getGoals();
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
       }
+
+      return message;
     });
+
+    return response;
+  };
+
+  const deleteGoal = async (idGoal: any): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
+
+      if (storedUser && storedToken && isAuth) {
+        let user = JSON.parse(storedUser);
+
+        try {
+          const response = await axios.delete(
+            `http://localhost:3000/v1/goal/${idGoal}/${user?.idUser}`
+          );
+
+          if (response.data && response.status == 200) {
+            message = "Meta deletada com sucesso!";
+            getGoals();
+            setIsAuthorized(true);
+          }
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
+      }
+
+      return message;
+    });
+
+    return response;
   };
 
   return (
@@ -136,7 +169,6 @@ export const GoalProvider = ({ children }: { children: React.ReactNode }) => {
         deleteGoal,
         setGoals,
         goals,
-        isPending,
         isAuthorized,
       }}
     >

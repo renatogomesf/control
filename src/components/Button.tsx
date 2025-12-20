@@ -1,6 +1,12 @@
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
-export default function Button({ className, onClick, value, isPending }: any) {
+export default function Button({
+  className,
+  onClick,
+  value,
+  isPending,
+  type,
+}: any) {
   return (
     <>
       <div
@@ -10,7 +16,7 @@ export default function Button({ className, onClick, value, isPending }: any) {
         {isPending ? (
           <AiOutlineLoading3Quarters className="animate-spin w-6 h-6" />
         ) : (
-          <input className="hover:cursor-pointer" type="button" value={value} />
+          <input className="hover:cursor-pointer w-full h-full" type={type} value={value} />
         )}
       </div>
     </>
