@@ -27,7 +27,7 @@ export default function Goal() {
   const [openModal, setOpenModal] = useState(false);
   const [titleModal, setTitleModal] = useState("");
   const [buttonModal, setButtonModal] = useState("");
-  const [goalToUpdateModal, setGoalToUpdateModal] = useState(null);
+  const [goalToModal, setGoalToModal] = useState(null);
 
   const searchGoal = (search: string | number) => {
     const resultSearch = goals?.filter((e) => {
@@ -64,9 +64,9 @@ export default function Goal() {
     setOpenMenuRow(!openMenuRow);
 
     if (goalToUpdate !== null) {
-      setGoalToUpdateModal(goalToUpdate);
+      setGoalToModal(goalToUpdate);
     } else {
-      setGoalToUpdateModal(null);
+      setGoalToModal(null);
     }
   };
 
@@ -76,7 +76,7 @@ export default function Goal() {
         setControlToast({
           showToast: true,
           type: 2,
-          text: "Metas não encontrada!",
+          text: "Metas não encontradas!",
         });
 
         setTimeout(() => {
@@ -89,7 +89,7 @@ export default function Goal() {
       if (response == "Internal Server Error") {
         setControlToast({
           showToast: true,
-          type: 2,
+          type: 3,
           text: "Erro no servidor!",
         });
 
@@ -189,7 +189,7 @@ export default function Goal() {
               title={titleModal}
               button={buttonModal}
               setOpenModal={setOpenModal}
-              goalToUpdateModal={goalToUpdateModal}
+              goalToModal={goalToModal}
               setControlToast={setControlToast}
             />
           )}

@@ -1,7 +1,6 @@
 import {
   createContext,
   useState,
-  useTransition,
   type Dispatch,
   type SetStateAction,
 } from "react";
@@ -22,12 +21,11 @@ type Revenue = {
 
 interface IRevenueContext {
   revenues: Revenue[] | null;
-  getRevenues: () => Promise<void> | void;
-  createRevenue: (data: any) => Promise<void> | void;
-  updateRevenue: (idGoal: any, data: any) => Promise<void> | void;
-  deleteRevenue: (idGoal: any) => Promise<void> | void;
+  getRevenues: () => Promise<string | void>;
+  createRevenue: (data: any) => Promise<string | void>;
+  updateRevenue: (idGoal: any, data: any) => Promise<string | void>;
+  deleteRevenue: (idGoal: any) => Promise<string | void>;
   setRevenue: Dispatch<SetStateAction<Revenue[] | null>>;
-  isPending: boolean;
   isAuthorized: boolean;
 }
 
@@ -47,88 +45,124 @@ export const RevenueProvider = ({
 
   const [revenues, setRevenue] = useState<Revenue[] | null>([]);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
-  const getRevenues = async () => {
-    await auth().then((isAuth) => {
+  const getRevenues = async (): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
+
       if (storedUser && storedToken && isAuth) {
         let user = JSON.parse(storedUser);
 
-        startTransition(async () => {
-          try {
-            const response = await axios.get(
-              `http://localhost:3000/v1/revenue/${user?.idUser}`
-            );
+        try {
+          const response = await axios.get(
+            `http://localhost:3000/v1/revenue/${user?.idUser}`
+          );
+
+          if (response.data && response.status == 200) {
             setRevenue(response.data);
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response.data);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
       } else {
         navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
   const createRevenue = async (data: any) => {
-    await auth().then((isAuth) => {
-      if (storedUser && storedToken && isAuth) {
-        startTransition(async () => {
-          try {
-            await axios.post(`http://localhost:3000/v1/revenue`, data);
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
 
+      if (storedUser && storedToken && isAuth) {
+        try {
+          const response = await axios.post(
+            `http://localhost:3000/v1/revenue`,
+            data
+          );
+
+          if (response.data && response.status == 201) {
+            message = "Receita criada com sucesso!";
             getRevenues();
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
   const updateRevenue = async (idRevenue: any, data: any) => {
-    await auth().then((isAuth) => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
+
       if (storedUser && storedToken && isAuth) {
         let user = JSON.parse(storedUser);
 
-        startTransition(async () => {
-          try {
-            await axios.put(
-              `http://localhost:3000/v1/revenue/${idRevenue}/${user?.idUser}`,
-              data
-            );
+        try {
+          const response = await axios.put(
+            `http://localhost:3000/v1/revenue/${idRevenue}/${user?.idUser}`,
+            data
+          );
 
+          if (response.data && response.status == 200) {
+            message = "Receita atualizada com sucesso!";
             getRevenues();
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
   const deleteRevenue = async (idRevenue: any) => {
-    await auth().then((isAuth) => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
+
       if (storedUser && storedToken && isAuth) {
         let user = JSON.parse(storedUser);
 
-        startTransition(async () => {
-          try {
-            await axios.delete(
-              `http://localhost:3000/v1/revenue/${idRevenue}/${user?.idUser}`
-            );
+        try {
+          const response = await axios.delete(
+            `http://localhost:3000/v1/revenue/${idRevenue}/${user?.idUser}`
+          );
 
+          if (response.data && response.status == 200) {
+            message = "Receita deletada com sucesso!";
             getRevenues();
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
   return (
@@ -140,7 +174,6 @@ export const RevenueProvider = ({
         deleteRevenue,
         setRevenue,
         revenues,
-        isPending,
         isAuthorized,
       }}
     >

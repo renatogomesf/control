@@ -12,10 +12,14 @@ import InfoCard from "../../components/InfoCard";
 import { MdOutlineFolderOff } from "react-icons/md";
 
 import { RevenueContext } from "../../context/RevenueContext";
+import Toast from "../../components/Toast";
+import type { ToastDTO } from "../../dtos/ToastDTO";
 
 export default function Revenue() {
   const { getRevenues, deleteRevenue, revenues, isAuthorized } =
     useContext(RevenueContext);
+
+  const [controlToast, setControlToast] = useState<ToastDTO>();
 
   const [revenuesList, setRevenueList] = useState<any>([]);
   const [selectOption, setSelectOption] = useState("Descrição");
@@ -62,16 +66,90 @@ export default function Revenue() {
     }
   };
 
+  const getAllrevenues = async () => {
+    await getRevenues().then((response) => {
+      if (response == "Revenue not found") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Receitas não encontradas!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Internal Server Error") {
+        setControlToast({
+          showToast: true,
+          type: 3,
+          text: "Erro no servidor!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+    });
+  };
+
   useEffect(() => {
-    getRevenues();
+    getAllrevenues();
   }, []);
 
   useEffect(() => {
     setRevenueList(revenues?.reverse());
   }, [revenues]);
 
-  const revenueDelete = (idGaol: any) => {
-    deleteRevenue(idGaol);
+  const revenueDelete = async (idGaol: any) => {
+    await deleteRevenue(idGaol).then((response) => {
+      if (response == "Receita deletada com sucesso!") {
+        setControlToast({
+          showToast: true,
+          type: 1,
+          text: "Receita deletada com sucesso!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Revenue not found") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Receita não encontrada!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Internal Server Error") {
+        setControlToast({
+          showToast: true,
+          type: 3,
+          text: "Erro no servidor!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+    });
   };
 
   const resultSumValue = revenues?.reduce(
@@ -109,6 +187,12 @@ export default function Revenue() {
 
   return (
     <>
+      <Toast
+        text={controlToast?.text}
+        showToast={controlToast?.showToast}
+        type={controlToast?.type}
+      />
+
       {isAuthorized ? (
         <div className="text-TERTIARY p-6 max-md:px-2">
           {openModal && (
@@ -117,6 +201,7 @@ export default function Revenue() {
               button={buttonModal}
               setOpenModal={setOpenModal}
               revenueToModal={revenueToModal}
+              setControlToast={setControlToast}
             />
           )}
 
@@ -130,6 +215,7 @@ export default function Revenue() {
             <div>
               <Button
                 value="Criar nova receita"
+                type="button"
                 onClick={() =>
                   modal("Criar nova receita", "Criar receita", null)
                 }

@@ -10,7 +10,7 @@ export default function ModalGoal({
   title,
   button,
   setOpenModal,
-  goalToUpdateModal,
+  goalToModal,
   setControlToast,
 }: any) {
   const { user } = useContext(UserContext);
@@ -25,18 +25,18 @@ export default function ModalGoal({
   const [totalValueAlert, setTotalValueAlert] = useState(false);
 
   useLayoutEffect(() => {
-    if (goalToUpdateModal !== null) {
-      setGoalInput(goalToUpdateModal.goal);
-      setCurrentValueInput(goalToUpdateModal.currentValue);
-      setTotalValueInput(goalToUpdateModal.totalValue);
+    if (goalToModal !== null) {
+      setGoalInput(goalToModal.goal);
+      setCurrentValueInput(goalToModal.currentValue);
+      setTotalValueInput(goalToModal.totalValue);
     } else {
       setGoalInput("");
       setCurrentValueInput("");
       setTotalValueInput("");
     }
-  }, [goalToUpdateModal]);
+  }, [goalToModal]);
 
-  const create = async (formData?: any) => {
+  const create = async (formData: any) => {
     const goal = formData.get("goal");
     const currentValue = formData.get("currentValue");
     const totalValue = formData.get("totalValue");
@@ -123,7 +123,7 @@ export default function ModalGoal({
     });
   };
 
-  const update = async (formData?: any) => {
+  const update = async (formData: any) => {
     const goal = formData.get("goal");
     const currentValue = formData.get("currentValue");
     const totalValue = formData.get("totalValue");
@@ -150,7 +150,7 @@ export default function ModalGoal({
       totalValue: totalValue,
     };
 
-    await updateGoal(goalToUpdateModal.idGoal, data).then((response) => {
+    await updateGoal(goalToModal.idGoal, data).then((response) => {
       if (response == "Meta atualizada com sucesso!") {
         setControlToast({
           showToast: true,
