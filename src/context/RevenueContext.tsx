@@ -75,7 +75,7 @@ export const RevenueProvider = ({
     return response;
   };
 
-  const createRevenue = async (data: any) => {
+  const createRevenue = async (data: any): Promise<string | void> => {
     const response = await auth().then(async (isAuth) => {
       let message: string = "";
 
@@ -104,7 +104,7 @@ export const RevenueProvider = ({
     return response;
   };
 
-  const updateRevenue = async (idRevenue: any, data: any) => {
+  const updateRevenue = async (idRevenue: any, data: any): Promise<string | void> => {
     const response = await auth().then(async (isAuth) => {
       let message: string = "";
 
@@ -135,7 +135,7 @@ export const RevenueProvider = ({
     return response;
   };
 
-  const deleteRevenue = async (idRevenue: any) => {
+  const deleteRevenue = async (idRevenue: any): Promise<string | void> => {
     const response = await auth().then(async (isAuth) => {
       let message: string = "";
 

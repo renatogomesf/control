@@ -1,7 +1,6 @@
 import {
   createContext,
   useState,
-  useTransition,
   type Dispatch,
   type SetStateAction,
 } from "react";
@@ -22,12 +21,11 @@ type Expense = {
 
 interface IExpenseContext {
   expenses: Expense[] | null;
-  getExpenses: () => Promise<void> | void;
-  createExpense: (data: any) => Promise<void> | void;
-  updateExpense: (idExpense: any, data: any) => Promise<void> | void;
-  deleteExpense: (idExpense: any) => Promise<void> | void;
+  getExpenses: () => Promise<string | void>;
+  createExpense: (data: any) => Promise<string | void>;
+  updateExpense: (idExpense: any, data: any) => Promise<string | void>;
+  deleteExpense: (idExpense: any) => Promise<string | void>;
   setExpense: Dispatch<SetStateAction<Expense[] | null>>;
-  isPending: boolean;
   isAuthorized: boolean;
 }
 
@@ -47,88 +45,127 @@ export const ExpenseProvider = ({
 
   const [expenses, setExpense] = useState<Expense[] | null>([]);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
-  const getExpenses = async () => {
-    await auth().then((isAuth) => {
+  const getExpenses = async (): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
+
       if (storedUser && storedToken && isAuth) {
         let user = JSON.parse(storedUser);
 
-        startTransition(async () => {
-          try {
-            const response = await axios.get(
-              `http://localhost:3000/v1/expense/${user?.idUser}`
-            );
+        try {
+          const response = await axios.get(
+            `http://localhost:3000/v1/expense/${user?.idUser}`
+          );
+
+          if (response.data && response.status == 200) {
             setExpense(response.data);
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response.data);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
       } else {
         navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
-  const createExpense = async (data: any) => {
-    await auth().then((isAuth) => {
-      if (storedUser && storedToken && isAuth) {
-        startTransition(async () => {
-          try {
-            await axios.post(`http://localhost:3000/v1/expense`, data);
+  const createExpense = async (data: any): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
 
+      if (storedUser && storedToken && isAuth) {
+        try {
+          const response = await axios.post(
+            `http://localhost:3000/v1/expense`,
+            data
+          );
+
+          if (response.data && response.status == 201) {
+            message = "Despesa criada com sucesso!";
             getExpenses();
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
-  const updateExpense = async (idExpense: any, data: any) => {
-    await auth().then((isAuth) => {
+  const updateExpense = async (
+    idExpense: any,
+    data: any
+  ): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
+
       if (storedUser && storedToken && isAuth) {
         let user = JSON.parse(storedUser);
 
-        startTransition(async () => {
-          try {
-            await axios.put(
-              `http://localhost:3000/v1/expense/${idExpense}/${user?.idUser}`,
-              data
-            );
+        try {
+          const response = await axios.put(
+            `http://localhost:3000/v1/expense/${idExpense}/${user?.idUser}`,
+            data
+          );
 
+          if (response.data && response.status == 200) {
+            message = "Despesa atualizada com sucesso!";
             getExpenses();
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
-  const deleteExpense = async (idExpense: any) => {
-    await auth().then((isAuth) => {
+  const deleteExpense = async (idExpense: any): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
+
       if (storedUser && storedToken && isAuth) {
         let user = JSON.parse(storedUser);
 
-        startTransition(async () => {
-          try {
-            await axios.delete(
-              `http://localhost:3000/v1/expense/${idExpense}/${user?.idUser}`
-            );
+        try {
+          const response = await axios.delete(
+            `http://localhost:3000/v1/expense/${idExpense}/${user?.idUser}`
+          );
 
+          if (response.data && response.status == 200) {
+            message = "Despesa deletada com sucesso!";
             getExpenses();
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
   return (
@@ -140,7 +177,6 @@ export const ExpenseProvider = ({
         deleteExpense,
         setExpense,
         expenses,
-        isPending,
         isAuthorized,
       }}
     >

@@ -66,7 +66,7 @@ export default function Revenue() {
     }
   };
 
-  const getAllrevenues = async () => {
+  const getAllRevenues = async () => {
     await getRevenues().then((response) => {
       if (response == "Revenue not found") {
         setControlToast({
@@ -99,7 +99,7 @@ export default function Revenue() {
   };
 
   useEffect(() => {
-    getAllrevenues();
+    getAllRevenues();
   }, []);
 
   useEffect(() => {

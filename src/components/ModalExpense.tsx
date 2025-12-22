@@ -3,7 +3,7 @@ import Button from "./Button";
 import InputDate from "./InputDate";
 
 import { IoClose } from "react-icons/io5";
-import { useContext, useLayoutEffect, useRef } from "react";
+import { useContext, useLayoutEffect, useState } from "react";
 import { ExpenseContext } from "../context/ExpenseContext";
 import { UserContext } from "../context/UserContext";
 
@@ -12,48 +12,203 @@ export default function ModalExpense({
   button,
   setOpenModal,
   expenseToModal,
+  setControlToast,
 }: any) {
   const { user } = useContext(UserContext);
   const { createExpense, updateExpense } = useContext(ExpenseContext);
 
-  const dateRef = useRef<HTMLInputElement>(null);
-  const descriptionRef = useRef<HTMLInputElement>(null);
-  const valueRef = useRef<HTMLInputElement>(null);
+  const [dateInput, setDateInput] = useState("");
+  const [descriptionInput, setDescriptionInput] = useState("");
+  const [valueInput, setValueInput] = useState("");
+
+  const [dateAlert, setDateAlert] = useState(false);
+  const [descriptionAlert, setDescriptionAlert] = useState(false);
+  const [valueAlert, setValueAlert] = useState(false);
 
   useLayoutEffect(() => {
     if (expenseToModal !== null) {
-      dateRef.current!.value = expenseToModal.date;
-      descriptionRef.current!.value = expenseToModal.description;
-      valueRef.current!.value = expenseToModal.value;
-
-      console.log("data " + expenseToModal.date);
+      setDateInput(expenseToModal.date);
+      setDescriptionInput(expenseToModal.description);
+      setValueInput(expenseToModal.value);
     } else {
-      dateRef.current!.value = "";
-      descriptionRef.current!.value = "";
-      valueRef.current!.value = "";
+      setDateInput("");
+      setDescriptionInput("");
+      setValueInput("");
     }
   }, [expenseToModal]);
 
-  const create = () => {
+  const create = async (formData: any) => {
+    const date = formData.get("date");
+    const description = formData.get("description");
+    const value = formData.get("value");
+
+    if (!date) {
+      setDateAlert(true);
+    }
+
+    if (!description) {
+      setDescriptionAlert(true);
+    }
+
+    if (!value) {
+      setValueAlert(true);
+    }
+
+    if (!date || !description || !value || !user?.idUser) {
+      return;
+    }
+
     const data = {
-      date: dateRef.current?.value,
-      description: descriptionRef.current?.value,
-      value: valueRef.current?.value,
+      date: date,
+      description: description,
+      value: value,
       idUser: user?.idUser,
     };
 
-    createExpense(data);
-    setOpenModal(false);
+    await createExpense(data).then((response) => {
+      if (response == "Despesa criada com sucesso!") {
+        setControlToast({
+          showToast: true,
+          type: 1,
+          text: "Despesa criada com sucesso!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "User not found") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Usuário não encontrado!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "All fields are required") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Preencha todos os campos!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Internal Server Error") {
+        setControlToast({
+          showToast: true,
+          type: 3,
+          text: "Erro no servidor!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+    });
   };
 
-  const update = (idExpense: any) => {
+  const update = async (formData: any) => {
+    const date = formData.get("date");
+    const description = formData.get("description");
+    const value = formData.get("value");
+
+    if (!date) {
+      setDateAlert(true);
+    }
+
+    if (!description) {
+      setDescriptionAlert(true);
+    }
+
+    if (!value) {
+      setValueAlert(true);
+    }
+
+    if (!date || !description || !value) {
+      return;
+    }
+
     const data = {
-      date: dateRef.current?.value,
-      description: descriptionRef.current?.value,
-      value: valueRef.current?.value,
+      date: date,
+      description: description,
+      value: value,
     };
 
-    updateExpense(idExpense, data);
+    await updateExpense(expenseToModal.idExpense, data).then((response) => {
+      if (response == "Despesa atualizada com sucesso!") {
+        setControlToast({
+          showToast: true,
+          type: 1,
+          text: "Despesa atualizada com sucesso!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Expense not found") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Despesa não encontrada!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "All fields are required") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Preencha todos os campos!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Internal Server Error") {
+        setControlToast({
+          showToast: true,
+          type: 3,
+          text: "Erro no servidor!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+    });
+
     setOpenModal(false);
   };
 
@@ -69,37 +224,77 @@ export default function ModalExpense({
             />
           </div>
 
-          <div className="flex flex-col gap-6">
-            <InputDate
-              ref={dateRef}
-              type="date"
-              className="w-full"
-              label="Data da despesa"
-            />
-            <Input
-              ref={descriptionRef}
-              type="text"
-              className="w-full"
-              label="Descrição"
-            />
-            <Input
-              ref={valueRef}
-              type="number"
-              className="w-full"
-              label="Valor total"
-            />
-          </div>
-          {title === "Criar nova despesa" ? (
-            <Button className="mt-6" value={button} onClick={() => create()} />
-          ) : title === "Atualizar despesa" ? (
-            <Button
-              className="mt-6"
-              value={button}
-              onClick={() => update(expenseToModal.idExpense)}
-            />
-          ) : (
-            ""
-          )}
+          <form
+            action={
+              title === "Criar nova despesa"
+                ? create
+                : title === "Atualizar despesa"
+                ? update
+                : ""
+            }
+            className="flex flex-col gap-6"
+          >
+            <div>
+              <InputDate
+                type="date"
+                className={`w-full ${dateAlert ? "ring-3 ring-red-600" : ""}`}
+                label="Data da despesa"
+                name="date"
+                defaultValue={dateInput}
+                onFocus={() => setDateAlert(false)}
+              />
+              {dateAlert ? (
+                <p className="absolute text-[0.7rem] mt-1 text-red-600">
+                  Campo Obrigatório!
+                </p>
+              ) : (
+                ""
+              )}
+            </div>
+            <div>
+              <Input
+                type="text"
+                className={`w-full ${
+                  descriptionAlert ? "ring-3 ring-red-600" : ""
+                }`}
+                label="Descrição"
+                name="description"
+                defaultValue={descriptionInput}
+                onFocus={() => setDescriptionAlert(false)}
+              />
+              {descriptionAlert ? (
+                <p className="absolute text-[0.7rem] mt-1 text-red-600">
+                  Campo Obrigatório!
+                </p>
+              ) : (
+                ""
+              )}
+            </div>
+            <div>
+              <Input
+                type="number"
+                className={`w-full ${valueAlert ? "ring-3 ring-red-600" : ""}`}
+                label="Valor total"
+                name="value"
+                defaultValue={valueInput}
+                onFocus={() => setValueAlert(false)}
+              />
+              {valueAlert ? (
+                <p className="absolute text-[0.7rem] mt-1 text-red-600">
+                  Campo Obrigatório!
+                </p>
+              ) : (
+                ""
+              )}
+            </div>
+            {title === "Criar nova despesa" ? (
+              <Button className="mt-6" value={button} type="submit" />
+            ) : title === "Atualizar despesa" ? (
+              <Button className="mt-6" value={button} type="submit" />
+            ) : (
+              ""
+            )}
+          </form>
         </div>
       </div>
     </>

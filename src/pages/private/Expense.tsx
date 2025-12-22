@@ -12,10 +12,14 @@ import InfoCard from "../../components/InfoCard";
 import { MdOutlineFolderOff } from "react-icons/md";
 
 import { ExpenseContext } from "../../context/ExpenseContext";
+import Toast from "../../components/Toast";
+import type { ToastDTO } from "../../dtos/ToastDTO";
 
 export default function Expense() {
   const { getExpenses, deleteExpense, expenses, isAuthorized } =
     useContext(ExpenseContext);
+
+  const [controlToast, setControlToast] = useState<ToastDTO>();
 
   const [expenseList, setExpenseList] = useState<any>([]);
   const [selectOption, setSelectOption] = useState("Descrição");
@@ -62,16 +66,90 @@ export default function Expense() {
     }
   };
 
+  const getAllExpense = async () => {
+    await getExpenses().then((response) => {
+      if (response == "Expense not found") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Despesas não encontradas!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Internal Server Error") {
+        setControlToast({
+          showToast: true,
+          type: 3,
+          text: "Erro no servidor!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+    });
+  };
+
   useEffect(() => {
-    getExpenses();
+    getAllExpense();
   }, []);
 
   useEffect(() => {
     setExpenseList(expenses?.reverse());
   }, [expenses]);
 
-  const expenseDelete = (idExpense: any) => {
-    deleteExpense(idExpense);
+  const expenseDelete = async (idExpense: any) => {
+    await deleteExpense(idExpense).then((response) => {
+      if (response == "Despesa deletada com sucesso!") {
+        setControlToast({
+          showToast: true,
+          type: 1,
+          text: "Despesa deletada com sucesso!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Expense not found") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Despesa não encontrada!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Internal Server Error") {
+        setControlToast({
+          showToast: true,
+          type: 3,
+          text: "Erro no servidor!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+    });
   };
 
   const resultSumValue = expenses?.reduce(
@@ -109,6 +187,11 @@ export default function Expense() {
 
   return (
     <>
+      <Toast
+        text={controlToast?.text}
+        showToast={controlToast?.showToast}
+        type={controlToast?.type}
+      />
       {isAuthorized ? (
         <div className="text-TERTIARY p-6 max-md:px-2">
           {openModal && (
@@ -117,6 +200,7 @@ export default function Expense() {
               button={buttonModal}
               setOpenModal={setOpenModal}
               expenseToModal={expenseToModal}
+              setControlToast={setControlToast}
             />
           )}
 
@@ -130,6 +214,7 @@ export default function Expense() {
             <div>
               <Button
                 value="Criar nova despesa"
+                type="button"
                 onClick={() =>
                   modal("Criar nova despesa", "Criar despesa", null)
                 }
