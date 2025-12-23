@@ -115,7 +115,7 @@ export default function Register() {
         showToast={controlToast?.showToast}
         type={controlToast?.type}
       />
-      <div className="flex justify-center items-center rounded-3xl bg-PRIMARY m-2 w-[400px]">
+      <div className="flex justify-center items-center rounded-3xl bg-PRIMARY border border-QUATERNARY m-2 w-[400px]">
         <div className="flex flex-col gap-3 w-[85%]">
           <div className="my-5">
             <h1 className="text-xl font-bold">Cadastre-se</h1>

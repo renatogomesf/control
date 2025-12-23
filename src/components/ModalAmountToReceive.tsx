@@ -3,7 +3,7 @@ import Button from "./Button";
 import InputDate from "./InputDate";
 
 import { IoClose } from "react-icons/io5";
-import { useContext, useLayoutEffect, useRef } from "react";
+import { useContext, useLayoutEffect, useRef, useTransition } from "react";
 import { AmountToReceiveContext } from "../context/AmountToReceiveContext";
 import { UserContext } from "../context/UserContext";
 
@@ -14,12 +14,16 @@ export default function ModalAmountToReceive({
   amountToReceiveToModal,
 }: any) {
   const { user } = useContext(UserContext);
-  const { createAmountToReceive, updateAmountToReceive } = useContext(AmountToReceiveContext);
+  const { createAmountToReceive, updateAmountToReceive } = useContext(
+    AmountToReceiveContext
+  );
 
   const dateRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLInputElement>(null);
   const valueRef = useRef<HTMLInputElement>(null);
+
+  const [isPending, startTransition] = useTransition();
 
   useLayoutEffect(() => {
     if (amountToReceiveToModal !== null) {
@@ -31,7 +35,7 @@ export default function ModalAmountToReceive({
       console.log("data " + amountToReceiveToModal.date);
     } else {
       dateRef.current!.value = "";
-      nameRef.current!.value = ""
+      nameRef.current!.value = "";
       descriptionRef.current!.value = "";
       valueRef.current!.value = "";
     }
@@ -46,8 +50,9 @@ export default function ModalAmountToReceive({
       idUser: user?.idUser,
     };
 
-    createAmountToReceive(data);
-    setOpenModal(false);
+    startTransition(async () => {
+      createAmountToReceive(data);
+    });
   };
 
   const update = (idAmountToReceive: any) => {
@@ -58,7 +63,9 @@ export default function ModalAmountToReceive({
       value: valueRef.current?.value,
     };
 
-    updateAmountToReceive(idAmountToReceive, data);
+    startTransition(async () => {
+      updateAmountToReceive(idAmountToReceive, data);
+    });
     setOpenModal(false);
   };
 
@@ -81,12 +88,7 @@ export default function ModalAmountToReceive({
               className="w-full"
               label="Data que receberá"
             />
-            <Input
-              ref={nameRef}
-              type="text"
-              className="w-full"
-              label="Nome"
-            />
+            <Input ref={nameRef} type="text" className="w-full" label="Nome" />
             <Input
               ref={descriptionRef}
               type="text"
@@ -101,12 +103,18 @@ export default function ModalAmountToReceive({
             />
           </div>
           {title === "Criar novo valor" ? (
-            <Button className="mt-6" value={button} onClick={() => create()} />
+            <Button
+              className="mt-6"
+              value={button}
+              type="submit"
+              isPending={isPending}
+            />
           ) : title === "Atualizar valor" ? (
             <Button
               className="mt-6"
               value={button}
-              onClick={() => update(amountToReceiveToModal.idAmountToReceive)}
+              type="submit"
+              isPending={isPending}
             />
           ) : (
             ""

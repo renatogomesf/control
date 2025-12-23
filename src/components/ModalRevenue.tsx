@@ -3,7 +3,7 @@ import Button from "./Button";
 import InputDate from "./InputDate";
 
 import { IoClose } from "react-icons/io5";
-import { useContext, useLayoutEffect, useState } from "react";
+import { useContext, useLayoutEffect, useState, useTransition } from "react";
 import { RevenueContext } from "../context/RevenueContext";
 import { UserContext } from "../context/UserContext";
 
@@ -24,6 +24,8 @@ export default function ModalRevenue({
   const [dateAlert, setDateAlert] = useState(false);
   const [descriptionAlert, setDescriptionAlert] = useState(false);
   const [valueAlert, setValueAlert] = useState(false);
+
+  const [isPending, startTransition] = useTransition();
 
   useLayoutEffect(() => {
     if (revenueToModal !== null) {
@@ -65,62 +67,64 @@ export default function ModalRevenue({
       idUser: user?.idUser,
     };
 
-    await createRevenue(data).then((response) => {
-      if (response == "Receita criada com sucesso!") {
-        setControlToast({
-          showToast: true,
-          type: 1,
-          text: "Receita criada com sucesso!",
-        });
-
-        setTimeout(() => {
+    startTransition(async () => {
+      await createRevenue(data).then((response) => {
+        if (response == "Receita criada com sucesso!") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 1,
+            text: "Receita criada com sucesso!",
           });
-        }, 4000);
-      }
 
-      if (response == "User not found") {
-        setControlToast({
-          showToast: true,
-          type: 2,
-          text: "Usuário não encontrado!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "User not found") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 2,
+            text: "Usuário não encontrado!",
           });
-        }, 4000);
-      }
 
-      if (response == "All fields are required") {
-        setControlToast({
-          showToast: true,
-          type: 2,
-          text: "Preencha todos os campos!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "All fields are required") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 2,
+            text: "Preencha todos os campos!",
           });
-        }, 4000);
-      }
 
-      if (response == "Internal Server Error") {
-        setControlToast({
-          showToast: true,
-          type: 3,
-          text: "Erro no servidor!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "Internal Server Error") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 3,
+            text: "Erro no servidor!",
           });
-        }, 4000);
-      }
+
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
+      });
     });
   };
 
@@ -151,62 +155,64 @@ export default function ModalRevenue({
       value: value,
     };
 
-    await updateRevenue(revenueToModal.idRevenue, data).then((response) => {
-      if (response == "Receita atualizada com sucesso!") {
-        setControlToast({
-          showToast: true,
-          type: 1,
-          text: "Receita atualizada com sucesso!",
-        });
-
-        setTimeout(() => {
+    startTransition(async () => {
+      await updateRevenue(revenueToModal.idRevenue, data).then((response) => {
+        if (response == "Receita atualizada com sucesso!") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 1,
+            text: "Receita atualizada com sucesso!",
           });
-        }, 4000);
-      }
 
-      if (response == "Revenue not found") {
-        setControlToast({
-          showToast: true,
-          type: 2,
-          text: "Receita não encontrada!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "Revenue not found") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 2,
+            text: "Receita não encontrada!",
           });
-        }, 4000);
-      }
 
-      if (response == "All fields are required") {
-        setControlToast({
-          showToast: true,
-          type: 2,
-          text: "Preencha todos os campos!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "All fields are required") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 2,
+            text: "Preencha todos os campos!",
           });
-        }, 4000);
-      }
 
-      if (response == "Internal Server Error") {
-        setControlToast({
-          showToast: true,
-          type: 3,
-          text: "Erro no servidor!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "Internal Server Error") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 3,
+            text: "Erro no servidor!",
           });
-        }, 4000);
-      }
+
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
+      });
     });
 
     setOpenModal(false);
@@ -288,9 +294,19 @@ export default function ModalRevenue({
               )}
             </div>
             {title === "Criar nova receita" ? (
-              <Button className="mt-6" value={button} type="submit" />
+              <Button
+                className="mt-6"
+                value={button}
+                type="submit"
+                isPending={isPending}
+              />
             ) : title === "Atualizar receita" ? (
-              <Button className="mt-6" value={button} type="submit" />
+              <Button
+                className="mt-6"
+                value={button}
+                type="submit"
+                isPending={isPending}
+              />
             ) : (
               ""
             )}

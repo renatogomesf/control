@@ -2,7 +2,7 @@ import Input from "./Input";
 import Button from "./Button";
 
 import { IoClose } from "react-icons/io5";
-import { useContext, useLayoutEffect, useState } from "react";
+import { useContext, useLayoutEffect, useState, useTransition } from "react";
 import { GoalContext } from "../context/GoalContext";
 import { UserContext } from "../context/UserContext";
 
@@ -23,6 +23,8 @@ export default function ModalGoal({
   const [goalAlert, setGoalAlert] = useState(false);
   const [currentValueAlert, setCurrentValueAlert] = useState(false);
   const [totalValueAlert, setTotalValueAlert] = useState(false);
+
+  const [isPending, startTransition] = useTransition();
 
   useLayoutEffect(() => {
     if (goalToModal !== null) {
@@ -64,62 +66,64 @@ export default function ModalGoal({
       idUser: user?.idUser,
     };
 
-    await createGoal(data).then((response) => {
-      if (response == "Meta criada com sucesso!") {
-        setControlToast({
-          showToast: true,
-          type: 1,
-          text: "Meta criada com sucesso!",
-        });
-
-        setTimeout(() => {
+    startTransition(async () => {
+      await createGoal(data).then((response) => {
+        if (response == "Meta criada com sucesso!") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 1,
+            text: "Meta criada com sucesso!",
           });
-        }, 4000);
-      }
 
-      if (response == "User not found") {
-        setControlToast({
-          showToast: true,
-          type: 2,
-          text: "Usuário não encontrado!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "User not found") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 2,
+            text: "Usuário não encontrado!",
           });
-        }, 4000);
-      }
 
-      if (response == "All fields are required") {
-        setControlToast({
-          showToast: true,
-          type: 2,
-          text: "Preencha todos os campos!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "All fields are required") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 2,
+            text: "Preencha todos os campos!",
           });
-        }, 4000);
-      }
 
-      if (response == "Internal Server Error") {
-        setControlToast({
-          showToast: true,
-          type: 3,
-          text: "Erro no servidor!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "Internal Server Error") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 3,
+            text: "Erro no servidor!",
           });
-        }, 4000);
-      }
+
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
+      });
     });
   };
 
@@ -150,62 +154,64 @@ export default function ModalGoal({
       totalValue: totalValue,
     };
 
-    await updateGoal(goalToModal.idGoal, data).then((response) => {
-      if (response == "Meta atualizada com sucesso!") {
-        setControlToast({
-          showToast: true,
-          type: 1,
-          text: "Meta atualizada com sucesso!",
-        });
-
-        setTimeout(() => {
+    startTransition(async () => {
+      await updateGoal(goalToModal.idGoal, data).then((response) => {
+        if (response == "Meta atualizada com sucesso!") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 1,
+            text: "Meta atualizada com sucesso!",
           });
-        }, 4000);
-      }
 
-      if (response == "Goal not found") {
-        setControlToast({
-          showToast: true,
-          type: 2,
-          text: "Meta não encontrada!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "Goal not found") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 2,
+            text: "Meta não encontrada!",
           });
-        }, 4000);
-      }
 
-      if (response == "All fields are required") {
-        setControlToast({
-          showToast: true,
-          type: 2,
-          text: "Preencha todos os campos!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "All fields are required") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 2,
+            text: "Preencha todos os campos!",
           });
-        }, 4000);
-      }
 
-      if (response == "Internal Server Error") {
-        setControlToast({
-          showToast: true,
-          type: 3,
-          text: "Erro no servidor!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "Internal Server Error") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 3,
+            text: "Erro no servidor!",
           });
-        }, 4000);
-      }
+
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
+      });
     });
 
     setOpenModal(false);
@@ -289,9 +295,19 @@ export default function ModalGoal({
               )}
             </div>
             {title === "Criar nova meta" ? (
-              <Button className="mt-6" value={button} type="submit" />
+              <Button
+                className="mt-6"
+                value={button}
+                type="submit"
+                isPending={isPending}
+              />
             ) : title === "Atualizar meta" ? (
-              <Button className="mt-6" value={button} type="submit" />
+              <Button
+                className="mt-6"
+                value={button}
+                type="submit"
+                isPending={isPending}
+              />
             ) : (
               ""
             )}

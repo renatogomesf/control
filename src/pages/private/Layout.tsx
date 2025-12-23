@@ -85,7 +85,7 @@ export default function Layout() {
   return (
     <>
       <div className="h-screen flex">
-        <div className={`fixed bg-BACKGROUND/70 w-full h-screen md:hidden ${openMenu ? "max-md:opacity-100 max-md:fixed" : "max-md:opacity-0 max-md:hidden"}`}></div>
+        <div className={`fixed z-2 bg-BACKGROUND/70 w-full h-screen md:hidden ${openMenu ? "max-md:opacity-100 max-md:fixed" : "max-md:opacity-0 max-md:hidden"}`}></div>
 
         <div className="text-TERTIARY fixed flex justify-between items-center px-2 bg-PRIMARY w-full z-10 md:hidden">
           <div className="flex items-center my-4">
@@ -102,7 +102,7 @@ export default function Layout() {
         </div>
 
         <div
-          className={`flex flex-col justify-between max-lg:overflow-x-clip max-lg:overflow-y-auto max-lg:w-[295px] bg-PRIMARY text-TERTIARY rounded-r-xl border-r border-QUATERNARY max-md:fixed max-md:right-0 max-md:w-fit max-md:z-1 max-md:rounded-none max-md:border duration-300 ease-linear ${openMenu ? "max-md:top-17" : "max-md:-top-100"} `}
+          className={`flex flex-col justify-between max-lg:overflow-x-clip max-lg:overflow-y-auto max-lg:w-[295px] bg-PRIMARY text-TERTIARY rounded-r-xl border-r border-QUATERNARY max-md:fixed max-md:right-0 max-md:w-fit max-md:z-2 max-md:rounded-none max-md:border duration-300 ease-linear ${openMenu ? "max-md:top-17" : "max-md:-top-100"} `}
         >
           <div className="mx-2">
             <div className="flex items-center justify-center my-6.5 max-md:hidden">

@@ -142,28 +142,28 @@ export default function AmountToPay() {
 
           <div className="flex flex-wrap gap-5 mb-5 max-sm:flex-row max-sm:flex-nowrap max-sm:overflow-auto">
             <InfoCard
-              className="max-sm:min-w-[250px]"
+              className=""
               title="Total de valores a pagar"
               text="Quantidade de valores registradas"
               info={`${AmountsToPay?.length} valores`}
             />
 
             <InfoCard
-              className="max-sm:min-w-[250px]"
+              className=""
               title="Valor total a pagar"
               text="Soma de todos os valores a pagar"
               info={`R$ ${resultSumValue?.toLocaleString()}`}
             />
 
             <InfoCard
-              className="max-sm:min-w-[250px]"
+              className=""
               title="Maior valor"
               text="Maior valor a pagar"
               info={`R$ ${maxValue().toLocaleString()}`}
             />
 
             <InfoCard
-              className="max-sm:min-w-[250px]"
+              className=""
               title="Menor valor"
               text="Menor valor a pagar"
               info={`R$ ${minValue().toLocaleString()}`}
@@ -186,14 +186,26 @@ export default function AmountToPay() {
               <div className="border border-QUATERNARY rounded-xl w-full overflow-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-QUATERNARY">
-                      <th className="p-4 text-start"></th>
-                      <th className="p-4 text-start">Quando pagará</th>
-                      <th className="p-4 text-start">Nome</th>
-                      <th className="p-4 text-start">Descrição</th>
-                      <th className="p-4 text-start">Valor</th>
-                      <th className="p-4 text-start">Criado em</th>
-                      <th className="p-4 text-start">Última atualização</th>
+                    <tr className="border-b border-QUATERNARY bg-QUATERNARY max-h-[70dvh]">
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY z-1"></th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Quando pagará
+                      </th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Nome
+                      </th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Descrição
+                      </th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Valor
+                      </th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Criado em
+                      </th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Última atualização
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -266,8 +278,10 @@ export default function AmountToPay() {
                             /{new Date(amountToPay.date).getUTCFullYear()}
                           </td>
                           <td className="p-4">{amountToPay.name}</td>
-                          <td className="p-4">{amountToPay.description}</td>
-                          <td className="p-4">
+                          <td className="p-4 truncate max-w-[250px]">
+                            {amountToPay.description}
+                          </td>
+                          <td className="p-4 text-nowrap">
                             R$ {amountToPay.value.toLocaleString()}
                           </td>
                           <td className="p-4">

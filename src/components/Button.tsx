@@ -16,7 +16,7 @@ export default function Button({
         {isPending ? (
           <AiOutlineLoading3Quarters className="animate-spin w-6 h-6" />
         ) : (
-          <input className="hover:cursor-pointer w-full h-full" type={type} value={value} />
+          <input className="hover:cursor-pointer w-full h-full" type={type} value={value} disabled={isPending} />
         )}
       </div>
     </>

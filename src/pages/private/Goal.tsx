@@ -212,28 +212,28 @@ export default function Goal() {
 
           <div className="flex flex-wrap gap-5 mb-5 max-sm:flex-row max-sm:flex-nowrap max-sm:overflow-auto">
             <InfoCard
-              className="max-sm:min-w-[250px]"
+              className=""
               title="Total de metas"
               text="Quantidade de metas registradas"
               info={`${goals?.length} metas`}
             />
 
             <InfoCard
-              className="max-sm:min-w-[250px]"
+              className=""
               title="Valo atual geral"
               text="Soma de todos os valores atuais"
               info={`R$ ${resultSumCurrentValue?.toLocaleString()}`}
             />
 
             <InfoCard
-              className="max-sm:min-w-[250px]"
+              className=""
               title="Valo total geral"
               text="Soma de todos os valores totais"
               info={`R$ ${resultSumTotlaValue?.toLocaleString()}`}
             />
 
             <InfoCard
-              className="max-sm:min-w-[250px]"
+              className=""
               title="Progesso geral"
               text="Indica o quanto do valor total das metas foi cumprido"
               info={
@@ -268,17 +268,29 @@ export default function Goal() {
                   onChange={(e: any) => searchGoal(e.target.value)}
                 />
               </div>
-              <div className="border border-QUATERNARY rounded-xl w-full overflow-auto">
+              <div className="border border-QUATERNARY rounded-xl w-full overflow-auto max-h-[70dvh]">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-QUATERNARY">
-                      <th className="p-4 text-start"></th>
-                      <th className="p-4 text-start">Meta</th>
-                      <th className="p-4 text-start">Valor atual</th>
-                      <th className="p-4 text-start">Valor total</th>
-                      <th className="p-4 text-start">Criado em</th>
-                      <th className="p-4 text-start">Última atualização</th>
-                      <th className="p-4 text-start">Progesso</th>
+                    <tr className="border-b border-QUATERNARY bg-QUATERNARY">
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY z-1"></th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Meta
+                      </th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Valor atual
+                      </th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Valor total
+                      </th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Criado em
+                      </th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Última atualização
+                      </th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Progesso
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -299,7 +311,7 @@ export default function Goal() {
                                 )
                               }
                             >
-                              <HiDotsVertical className=" w-4 h-4" />
+                              <HiDotsVertical className="z-0 w-4 h-4" />
                             </div>
 
                             <div
@@ -330,11 +342,13 @@ export default function Goal() {
                               </div>
                             </div>
                           </td>
-                          <td className="p-4">{goal.goal}</td>
-                          <td className="p-4">
+                          <td className="p-4 truncate max-w-[250px]">
+                            {goal.goal}
+                          </td>
+                          <td className="p-4 text-nowrap">
                             R$ {goal.currentValue.toLocaleString()}
                           </td>
-                          <td className="p-4">
+                          <td className="p-4 text-nowrap">
                             R$ {goal.totalValue.toLocaleString()}
                           </td>
                           <td className="p-4">

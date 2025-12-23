@@ -224,28 +224,28 @@ export default function Expense() {
 
           <div className="flex flex-wrap gap-5 mb-5 max-sm:flex-row max-sm:flex-nowrap max-sm:overflow-auto">
             <InfoCard
-              className="max-sm:min-w-[250px]"
+              className=""
               title="Total de despesas"
               text="Quantidade de despesas registradas"
               info={`${expenses?.length} despesas`}
             />
 
             <InfoCard
-              className="max-sm:min-w-[250px]"
+              className=""
               title="Valor total das despesas"
               text="Soma de todos os valores"
               info={`R$ ${resultSumValue?.toLocaleString()}`}
             />
 
             <InfoCard
-              className="max-sm:min-w-[250px]"
+              className=""
               title="Maior valor"
               text="Maior valor gasto"
               info={`R$ ${maxValue().toLocaleString()}`}
             />
 
             <InfoCard
-              className="max-sm:min-w-[250px]"
+              className=""
               title="Menor valor"
               text="Menor valor gasto"
               info={`R$ ${minValue().toLocaleString()}`}
@@ -265,16 +265,26 @@ export default function Expense() {
                   onChange={(e: any) => searchExpense(e.target.value)}
                 />
               </div>
-              <div className="border border-QUATERNARY rounded-xl w-full overflow-auto">
+              <div className="border border-QUATERNARY rounded-xl w-full overflow-auto max-h-[70dvh]">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-QUATERNARY">
-                      <th className="p-4 text-start"></th>
-                      <th className="p-4 text-start">Quando gastou</th>
-                      <th className="p-4 text-start">Descrição</th>
-                      <th className="p-4 text-start">Valor</th>
-                      <th className="p-4 text-start">Criado em</th>
-                      <th className="p-4 text-start">Última atualização</th>
+                    <tr className="border-b border-QUATERNARY bg-QUATERNARY">
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY z-1"></th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Quando gastou
+                      </th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Descrição
+                      </th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Valor
+                      </th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Criado em
+                      </th>
+                      <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
+                        Última atualização
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -342,8 +352,10 @@ export default function Expense() {
                               : new Date(expense.date).getUTCMonth() + 1}
                             /{new Date(expense.date).getUTCFullYear()}
                           </td>
-                          <td className="p-4">{expense.description}</td>
-                          <td className="p-4">
+                          <td className="p-4 truncate max-w-[250px]">
+                            {expense.description}
+                          </td>
+                          <td className="p-4 text-nowrap">
                             R$ {expense.value.toLocaleString()}
                           </td>
                           <td className="p-4">

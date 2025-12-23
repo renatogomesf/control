@@ -3,7 +3,7 @@ import Button from "./Button";
 import InputDate from "./InputDate";
 
 import { IoClose } from "react-icons/io5";
-import { useContext, useLayoutEffect, useRef } from "react";
+import { useContext, useLayoutEffect, useRef, useTransition } from "react";
 import { AmountToPayContext } from "../context/AmountToPayContext";
 import { UserContext } from "../context/UserContext";
 
@@ -14,12 +14,15 @@ export default function ModalAmountToPay({
   amountToPayToModal,
 }: any) {
   const { user } = useContext(UserContext);
-  const { createAmountToPay, updateAmountToPay } = useContext(AmountToPayContext);
+  const { createAmountToPay, updateAmountToPay } =
+    useContext(AmountToPayContext);
 
   const dateRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLInputElement>(null);
   const valueRef = useRef<HTMLInputElement>(null);
+
+  const [isPending, startTransition] = useTransition();
 
   useLayoutEffect(() => {
     if (amountToPayToModal !== null) {
@@ -31,7 +34,7 @@ export default function ModalAmountToPay({
       console.log("data " + amountToPayToModal.date);
     } else {
       dateRef.current!.value = "";
-      nameRef.current!.value = ""
+      nameRef.current!.value = "";
       descriptionRef.current!.value = "";
       valueRef.current!.value = "";
     }
@@ -46,8 +49,9 @@ export default function ModalAmountToPay({
       idUser: user?.idUser,
     };
 
-    createAmountToPay(data);
-    setOpenModal(false);
+    startTransition(async () => {
+      createAmountToPay(data);
+    });
   };
 
   const update = (idAmountToPay: any) => {
@@ -58,7 +62,9 @@ export default function ModalAmountToPay({
       value: valueRef.current?.value,
     };
 
-    updateAmountToPay(idAmountToPay, data);
+    startTransition(async () => {
+      updateAmountToPay(idAmountToPay, data);
+    });
     setOpenModal(false);
   };
 
@@ -81,12 +87,7 @@ export default function ModalAmountToPay({
               className="w-full"
               label="Data que pagará"
             />
-            <Input
-              ref={nameRef}
-              type="text"
-              className="w-full"
-              label="Nome"
-            />
+            <Input ref={nameRef} type="text" className="w-full" label="Nome" />
             <Input
               ref={descriptionRef}
               type="text"
@@ -101,12 +102,18 @@ export default function ModalAmountToPay({
             />
           </div>
           {title === "Criar novo valor" ? (
-            <Button className="mt-6" value={button} onClick={() => create()} />
+            <Button
+              className="mt-6"
+              value={button}
+              type="submit"
+              isPending={isPending}
+            />
           ) : title === "Atualizar valor" ? (
             <Button
               className="mt-6"
               value={button}
-              onClick={() => update(amountToPayToModal.idAmountToPay)}
+              type="submit"
+              isPending={isPending}
             />
           ) : (
             ""
