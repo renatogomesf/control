@@ -1,7 +1,6 @@
 import {
   createContext,
   useState,
-  useTransition,
   type Dispatch,
   type SetStateAction,
 } from "react";
@@ -23,15 +22,15 @@ type AmountToReceive = {
 
 interface IAmountToReceiveContext {
   AmountsToReceive: AmountToReceive[] | null;
-  getAmountsToReceive: () => Promise<void> | void;
-  createAmountToReceive: (data: any) => Promise<void> | void;
+  getAmountsToReceive: () => Promise<string | void>;
+  createAmountToReceive: (data: any) => Promise<string | void>;
   updateAmountToReceive: (
     idAmountToReceive: any,
     data: any
-  ) => Promise<void> | void;
-  deleteAmountToReceive: (idAmountToReceive: any) => Promise<void> | void;
+  ) => Promise<string | void>;
+  deleteAmountToReceive: (idAmountToReceive: any) => Promise<string | void>;
   setAmountToReceive: Dispatch<SetStateAction<AmountToReceive[] | null>>;
-  isPending: boolean;
+
   isAuthorized: boolean;
 }
 
@@ -55,88 +54,129 @@ export const AmountToReceiveProvider = ({
     AmountToReceive[] | null
   >([]);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
-  const getAmountsToReceive = async () => {
-    await auth().then((isAuth) => {
+  const getAmountsToReceive = async (): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
+
       if (storedUser && storedToken && isAuth) {
         let user = JSON.parse(storedUser);
 
-        startTransition(async () => {
-          try {
-            const response = await axios.get(
-              `http://localhost:3000/v1/amounttoreceive/${user?.idUser}`
-            );
+        try {
+          const response = await axios.get(
+            `http://localhost:3000/v1/amounttoreceive/${user?.idUser}`
+          );
+
+          if (response.data && response.status == 200) {
             setAmountToReceive(response.data);
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response.data);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
       } else {
         navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
-  const createAmountToReceive = async (data: any) => {
-    await auth().then((isAuth) => {
-      if (storedUser && storedToken && isAuth) {
-        startTransition(async () => {
-          try {
-            await axios.post(`http://localhost:3000/v1/amounttoreceive`, data);
+  const createAmountToReceive = async (data: any): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
 
+      if (storedUser && storedToken && isAuth) {
+        try {
+          const response = await axios.post(
+            `http://localhost:3000/v1/amounttoreceive`,
+            data
+          );
+
+          if (response.data && response.status == 201) {
+            message = "Valor criado com sucesso!";
             getAmountsToReceive();
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
-  const updateAmountToReceive = async (idAmountToReceive: any, data: any) => {
-    await auth().then((isAuth) => {
+  const updateAmountToReceive = async (
+    idAmountToReceive: any,
+    data: any
+  ): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
+
       if (storedUser && storedToken && isAuth) {
         let user = JSON.parse(storedUser);
 
-        startTransition(async () => {
-          try {
-            await axios.put(
-              `http://localhost:3000/v1/amounttoreceive/${idAmountToReceive}/${user?.idUser}`,
-              data
-            );
+        try {
+          const response = await axios.put(
+            `http://localhost:3000/v1/amounttoreceive/${idAmountToReceive}/${user?.idUser}`,
+            data
+          );
 
+          if (response.data && response.status == 200) {
+            message = "Valor atualizado com sucesso!";
             getAmountsToReceive();
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
-  const deleteAmountToReceive = async (idAmountToReceive: any) => {
-    await auth().then((isAuth) => {
+  const deleteAmountToReceive = async (
+    idAmountToReceive: any
+  ): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
+
       if (storedUser && storedToken && isAuth) {
         let user = JSON.parse(storedUser);
 
-        startTransition(async () => {
-          try {
-            await axios.delete(
-              `http://localhost:3000/v1/amounttoreceive/${idAmountToReceive}/${user?.idUser}`
-            );
+        try {
+          const response = await axios.delete(
+            `http://localhost:3000/v1/amounttoreceive/${idAmountToReceive}/${user?.idUser}`
+          );
 
+          if (response.data && response.status == 200) {
+            message = "Valor deletado com sucesso!";
             getAmountsToReceive();
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
   return (
@@ -148,7 +188,6 @@ export const AmountToReceiveProvider = ({
         deleteAmountToReceive,
         setAmountToReceive,
         AmountsToReceive,
-        isPending,
         isAuthorized,
       }}
     >

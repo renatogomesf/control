@@ -12,6 +12,8 @@ import InfoCard from "../../components/InfoCard";
 import { MdOutlineFolderOff } from "react-icons/md";
 
 import { AmountToReceiveContext } from "./../../context/AmountToReceiveContext";
+import type { ToastDTO } from "../../dtos/ToastDTO";
+import Toast from "../../components/Toast";
 
 export default function AmountToReceive() {
   const {
@@ -20,6 +22,8 @@ export default function AmountToReceive() {
     AmountsToReceive,
     isAuthorized,
   } = useContext(AmountToReceiveContext);
+
+  const [controlToast, setControlToast] = useState<ToastDTO>();
 
   const [amountToReceiveList, setAmountToReceiveList] = useState<any>([]);
   const [selectOption, setSelectOption] = useState("Nome");
@@ -71,16 +75,90 @@ export default function AmountToReceive() {
     }
   };
 
+  const getAllAmountsToReceive = async () => {
+    await getAmountsToReceive().then((response) => {
+      if (response == "Amount to receive not found") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Valores a receber não encontrados!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Internal Server Error") {
+        setControlToast({
+          showToast: true,
+          type: 3,
+          text: "Erro no servidor!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+    });
+  };
+
   useEffect(() => {
-    getAmountsToReceive();
+    getAllAmountsToReceive();
   }, []);
 
   useEffect(() => {
     setAmountToReceiveList(AmountsToReceive?.reverse());
   }, [AmountsToReceive]);
 
-  const amountToReceiveDelete = (idAmountToReceive: any) => {
-    deleteAmountToReceive(idAmountToReceive);
+  const amountToReceiveDelete = async (idAmountToReceive: any) => {
+    await deleteAmountToReceive(idAmountToReceive).then((response) => {
+      if (response == "Valor deletado com sucesso!") {
+        setControlToast({
+          showToast: true,
+          type: 1,
+          text: "Valor deletado com sucesso!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Amount to receive not found") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Valor não encontrado!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Internal Server Error") {
+        setControlToast({
+          showToast: true,
+          type: 3,
+          text: "Erro no servidor!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+    });
   };
 
   const resultSumValue = AmountsToReceive?.reduce(
@@ -118,6 +196,11 @@ export default function AmountToReceive() {
 
   return (
     <>
+      <Toast
+        text={controlToast?.text}
+        showToast={controlToast?.showToast}
+        type={controlToast?.type}
+      />
       {isAuthorized ? (
         <div className="text-TERTIARY p-6 max-md:px-2">
           {openModal && (
@@ -126,6 +209,7 @@ export default function AmountToReceive() {
               button={buttonModal}
               setOpenModal={setOpenModal}
               amountToReceiveToModal={amountToReceiveToModal}
+              setControlToast={setControlToast}
             />
           )}
 
@@ -139,6 +223,7 @@ export default function AmountToReceive() {
             <div>
               <Button
                 value="Criar novo valor"
+                type="button"
                 onClick={() => modal("Criar novo valor", "Criar valor", null)}
               />
             </div>
@@ -187,10 +272,10 @@ export default function AmountToReceive() {
                   onChange={(e: any) => searchAmountToReceive(e.target.value)}
                 />
               </div>
-              <div className="border border-QUATERNARY rounded-xl w-full overflow-auto">
+              <div className="border border-QUATERNARY rounded-xl w-full overflow-auto max-h-[70dvh]">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-QUATERNARY bg-QUATERNARY max-h-[70dvh]">
+                    <tr className="border-b border-QUATERNARY bg-QUATERNARY">
                       <th className="p-4 text-start sticky top-0 bg-QUATERNARY z-1"></th>
                       <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
                         Quando receberá
