@@ -2,7 +2,7 @@ import { HiDotsVertical } from "react-icons/hi";
 import { FaTrashAlt } from "react-icons/fa";
 import { GrUpdate } from "react-icons/gr";
 import { IoClose } from "react-icons/io5";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useTransition } from "react";
 import Button from "../../components/Button";
 import ModalAmountToPay from "../../components/ModalAmountToPay";
 import LoadingScreen from "../../components/LoadingScreen";
@@ -14,12 +14,15 @@ import { MdOutlineFolderOff } from "react-icons/md";
 import { AmountToPayContext } from "../../context/AmountToPayContext";
 import type { ToastDTO } from "../../dtos/ToastDTO";
 import Toast from "../../components/Toast";
+import Dialog from "../../components/Dialog";
 
 export default function AmountToPay() {
   const { getAmountsToPay, deleteAmountToPay, AmountsToPay, isAuthorized } =
     useContext(AmountToPayContext);
 
   const [controlToast, setControlToast] = useState<ToastDTO>();
+
+  const [isPending, startTransition] = useTransition();
 
   const [amountToPayList, setAmountToPayList] = useState<any>([]);
   const [selectOption, setSelectOption] = useState("Nome");
@@ -29,6 +32,10 @@ export default function AmountToPay() {
   const [titleModal, setTitleModal] = useState("");
   const [buttonModal, setButtonModal] = useState("");
   const [amountToPayToModal, setAmountToPay] = useState(null);
+
+  const [showDialog, setShowDialog] = useState(false);
+  const [idToDelete, setIdToDelete] = useState("");
+  const [itemToDelete, setItemToDelete] = useState("");
 
   const searchAmountToPay = (search: string | number) => {
     const resultSearch = AmountsToPay?.filter((e) => {
@@ -112,49 +119,60 @@ export default function AmountToPay() {
   }, [AmountsToPay]);
 
   const amountToPayDelete = async (idAmountToPay: any) => {
-    await deleteAmountToPay(idAmountToPay).then((response) => {
-      if (response == "Valor deletado com sucesso!") {
-        setControlToast({
-          showToast: true,
-          type: 1,
-          text: "Valor deletado com sucesso!",
-        });
-
-        setTimeout(() => {
+    startTransition(async () => {
+      await deleteAmountToPay(idAmountToPay).then((response) => {
+        if (response == "Valor deletado com sucesso!") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 1,
+            text: "Valor deletado com sucesso!",
           });
-        }, 4000);
-      }
 
-      if (response == "Amount to pay not found") {
-        setControlToast({
-          showToast: true,
-          type: 2,
-          text: "Valor não encontrado!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "Amount to pay not found") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 2,
+            text: "Valor não encontrado!",
           });
-        }, 4000);
-      }
 
-      if (response == "Internal Server Error") {
-        setControlToast({
-          showToast: true,
-          type: 3,
-          text: "Erro no servidor!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "Internal Server Error") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 3,
+            text: "Erro no servidor!",
           });
-        }, 4000);
-      }
+
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
+      });
     });
+
+    setShowDialog(false);
+  };
+
+  const openDialog = (idAmountToPay: any, amountToPay: any) => {
+    setShowDialog(true);
+    setIdToDelete(idAmountToPay);
+    setItemToDelete(amountToPay);
+    setOpenMenuRow(!openMenuRow);
   };
 
   const resultSumValue = AmountsToPay?.reduce(
@@ -197,6 +215,17 @@ export default function AmountToPay() {
         showToast={controlToast?.showToast}
         type={controlToast?.type}
       />
+
+      <Dialog
+        showDialog={showDialog}
+        setShowDialog={setShowDialog}
+        action={amountToPayDelete}
+        isPending={isPending}
+        idToDelete={idToDelete}
+        itemToDelete={itemToDelete}
+        table="amountToPay"
+      />
+
       {isAuthorized ? (
         <div className="text-TERTIARY p-6 max-md:px-2">
           {openModal && (
@@ -343,7 +372,10 @@ export default function AmountToPay() {
                               <div
                                 className="flex items-center gap-2 px-1.5 rounded-sm hover:bg-PRIMARY hover:cursor-pointer"
                                 onClick={() =>
-                                  amountToPayDelete(amountToPay.idAmountToPay)
+                                  openDialog(
+                                    amountToPay.idAmountToPay,
+                                    amountToPay
+                                  )
                                 }
                               >
                                 <FaTrashAlt className="w-3 h-3" /> Deletar

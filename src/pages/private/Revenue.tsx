@@ -2,7 +2,7 @@ import { HiDotsVertical } from "react-icons/hi";
 import { FaTrashAlt } from "react-icons/fa";
 import { GrUpdate } from "react-icons/gr";
 import { IoClose } from "react-icons/io5";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useTransition } from "react";
 import Button from "../../components/Button";
 import InputSearch from "../../components/InputSearch";
 import ModalRevenue from "../../components/ModalRevenue";
@@ -14,12 +14,15 @@ import { MdOutlineFolderOff } from "react-icons/md";
 import { RevenueContext } from "../../context/RevenueContext";
 import Toast from "../../components/Toast";
 import type { ToastDTO } from "../../dtos/ToastDTO";
+import Dialog from "../../components/Dialog";
 
 export default function Revenue() {
   const { getRevenues, deleteRevenue, revenues, isAuthorized } =
     useContext(RevenueContext);
 
   const [controlToast, setControlToast] = useState<ToastDTO>();
+
+  const [isPending, startTransition] = useTransition();
 
   const [revenuesList, setRevenueList] = useState<any>([]);
   const [selectOption, setSelectOption] = useState("Descrição");
@@ -29,6 +32,10 @@ export default function Revenue() {
   const [titleModal, setTitleModal] = useState("");
   const [buttonModal, setButtonModal] = useState("");
   const [revenueToModal, setRevenueToModal] = useState(null);
+
+  const [showDialog, setShowDialog] = useState(false);
+  const [idToDelete, setIdToDelete] = useState("");
+  const [itemToDelete, setItemToDelete] = useState("");
 
   const searchRevenue = (search: string | number) => {
     const resultSearch = revenues?.filter((e) => {
@@ -107,49 +114,60 @@ export default function Revenue() {
   }, [revenues]);
 
   const revenueDelete = async (idGaol: any) => {
-    await deleteRevenue(idGaol).then((response) => {
-      if (response == "Receita deletada com sucesso!") {
-        setControlToast({
-          showToast: true,
-          type: 1,
-          text: "Receita deletada com sucesso!",
-        });
-
-        setTimeout(() => {
+    startTransition(async () => {
+      await deleteRevenue(idGaol).then((response) => {
+        if (response == "Receita deletada com sucesso!") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 1,
+            text: "Receita deletada com sucesso!",
           });
-        }, 4000);
-      }
 
-      if (response == "Revenue not found") {
-        setControlToast({
-          showToast: true,
-          type: 2,
-          text: "Receita não encontrada!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "Revenue not found") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 2,
+            text: "Receita não encontrada!",
           });
-        }, 4000);
-      }
 
-      if (response == "Internal Server Error") {
-        setControlToast({
-          showToast: true,
-          type: 3,
-          text: "Erro no servidor!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "Internal Server Error") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 3,
+            text: "Erro no servidor!",
           });
-        }, 4000);
-      }
+
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
+      });
     });
+
+    setShowDialog(false);
+  };
+
+  const openDialog = (idRevenue: any, revenue: any) => {
+    setShowDialog(true);
+    setIdToDelete(idRevenue);
+    setItemToDelete(revenue);
+    setOpenMenuRow(!openMenuRow);
   };
 
   const resultSumValue = revenues?.reduce(
@@ -191,6 +209,16 @@ export default function Revenue() {
         text={controlToast?.text}
         showToast={controlToast?.showToast}
         type={controlToast?.type}
+      />
+
+      <Dialog
+        showDialog={showDialog}
+        setShowDialog={setShowDialog}
+        action={revenueDelete}
+        isPending={isPending}
+        idToDelete={idToDelete}
+        itemToDelete={itemToDelete}
+        table="revenue"
       />
 
       {isAuthorized ? (
@@ -337,7 +365,9 @@ export default function Revenue() {
                               </div>
                               <div
                                 className="flex items-center gap-2 px-1.5 rounded-sm hover:bg-PRIMARY hover:cursor-pointer"
-                                onClick={() => revenueDelete(revenue.idRevenue)}
+                                onClick={() =>
+                                  openDialog(revenue.idRevenue, revenue)
+                                }
                               >
                                 <FaTrashAlt className="w-3 h-3" /> Deletar
                               </div>

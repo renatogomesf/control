@@ -2,7 +2,7 @@ import { HiDotsVertical } from "react-icons/hi";
 import { FaTrashAlt } from "react-icons/fa";
 import { GrUpdate } from "react-icons/gr";
 import { IoClose } from "react-icons/io5";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useTransition } from "react";
 import Button from "../../components/Button";
 import InputSearch from "../../components/InputSearch";
 import ModalExpense from "../../components/ModalExpense";
@@ -14,12 +14,15 @@ import { MdOutlineFolderOff } from "react-icons/md";
 import { ExpenseContext } from "../../context/ExpenseContext";
 import Toast from "../../components/Toast";
 import type { ToastDTO } from "../../dtos/ToastDTO";
+import Dialog from "../../components/Dialog";
 
 export default function Expense() {
   const { getExpenses, deleteExpense, expenses, isAuthorized } =
     useContext(ExpenseContext);
 
   const [controlToast, setControlToast] = useState<ToastDTO>();
+
+  const [isPending, startTransition] = useTransition();
 
   const [expenseList, setExpenseList] = useState<any>([]);
   const [selectOption, setSelectOption] = useState("Descrição");
@@ -29,6 +32,10 @@ export default function Expense() {
   const [titleModal, setTitleModal] = useState("");
   const [buttonModal, setButtonModal] = useState("");
   const [expenseToModal, setExpenseToModal] = useState(null);
+
+  const [showDialog, setShowDialog] = useState(false);
+  const [idToDelete, setIdToDelete] = useState("");
+  const [itemToDelete, setItemToDelete] = useState("");
 
   const searchExpense = (search: string | number) => {
     const resultSearch = expenses?.filter((e) => {
@@ -107,49 +114,60 @@ export default function Expense() {
   }, [expenses]);
 
   const expenseDelete = async (idExpense: any) => {
-    await deleteExpense(idExpense).then((response) => {
-      if (response == "Despesa deletada com sucesso!") {
-        setControlToast({
-          showToast: true,
-          type: 1,
-          text: "Despesa deletada com sucesso!",
-        });
-
-        setTimeout(() => {
+    startTransition(async () => {
+      await deleteExpense(idExpense).then((response) => {
+        if (response == "Despesa deletada com sucesso!") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 1,
+            text: "Despesa deletada com sucesso!",
           });
-        }, 4000);
-      }
 
-      if (response == "Expense not found") {
-        setControlToast({
-          showToast: true,
-          type: 2,
-          text: "Despesa não encontrada!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "Expense not found") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 2,
+            text: "Despesa não encontrada!",
           });
-        }, 4000);
-      }
 
-      if (response == "Internal Server Error") {
-        setControlToast({
-          showToast: true,
-          type: 3,
-          text: "Erro no servidor!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "Internal Server Error") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 3,
+            text: "Erro no servidor!",
           });
-        }, 4000);
-      }
+
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
+      });
     });
+
+    setShowDialog(false);
+  };
+
+  const openDialog = (idExpense: any, expense: any) => {
+    setShowDialog(true);
+    setIdToDelete(idExpense);
+    setItemToDelete(expense);
+    setOpenMenuRow(!openMenuRow);
   };
 
   const resultSumValue = expenses?.reduce(
@@ -192,6 +210,17 @@ export default function Expense() {
         showToast={controlToast?.showToast}
         type={controlToast?.type}
       />
+
+      <Dialog
+        showDialog={showDialog}
+        setShowDialog={setShowDialog}
+        action={expenseDelete}
+        isPending={isPending}
+        idToDelete={idToDelete}
+        itemToDelete={itemToDelete}
+        table="expense"
+      />
+
       {isAuthorized ? (
         <div className="text-TERTIARY p-6 max-md:px-2">
           {openModal && (
@@ -336,7 +365,7 @@ export default function Expense() {
                               </div>
                               <div
                                 className="flex items-center gap-2 px-1.5 rounded-sm hover:bg-PRIMARY hover:cursor-pointer"
-                                onClick={() => expenseDelete(expense.idExpense)}
+                                onClick={() => openDialog(expense.idExpense, expense)}
                               >
                                 <FaTrashAlt className="w-3 h-3" /> Deletar
                               </div>

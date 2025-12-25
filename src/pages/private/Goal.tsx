@@ -2,7 +2,7 @@ import { HiDotsVertical } from "react-icons/hi";
 import { FaTrashAlt } from "react-icons/fa";
 import { GrUpdate } from "react-icons/gr";
 import { IoClose } from "react-icons/io5";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useTransition } from "react";
 import Button from "../../components/Button";
 import InputSearch from "../../components/InputSearch";
 import ModalGoal from "../../components/ModalGoal";
@@ -14,11 +14,14 @@ import { MdOutlineFolderOff } from "react-icons/md";
 import { GoalContext } from "../../context/GoalContext";
 import type { ToastDTO } from "../../dtos/ToastDTO";
 import Toast from "../../components/Toast";
+import Dialog from "../../components/Dialog";
 
 export default function Goal() {
   const { getGoals, deleteGoal, goals, isAuthorized } = useContext(GoalContext);
 
   const [controlToast, setControlToast] = useState<ToastDTO>();
+
+  const [isPending, startTransition] = useTransition();
 
   const [goalsList, setGoalList] = useState<any>([]);
   const [selectOption, setSelectOption] = useState("Metas");
@@ -28,6 +31,10 @@ export default function Goal() {
   const [titleModal, setTitleModal] = useState("");
   const [buttonModal, setButtonModal] = useState("");
   const [goalToModal, setGoalToModal] = useState(null);
+
+  const [showDialog, setShowDialog] = useState(false);
+  const [idToDelete, setIdToDelete] = useState("");
+  const [itemToDelete, setItemToDelete] = useState("");
 
   const searchGoal = (search: string | number) => {
     const resultSearch = goals?.filter((e) => {
@@ -111,49 +118,60 @@ export default function Goal() {
   }, [goals]);
 
   const goalDelete = async (idGaol: any) => {
-    await deleteGoal(idGaol).then((response) => {
-      if (response == "Meta deletada com sucesso!") {
-        setControlToast({
-          showToast: true,
-          type: 1,
-          text: "Meta deletada com sucesso!",
-        });
-
-        setTimeout(() => {
+    startTransition(async () => {
+      await deleteGoal(idGaol).then((response) => {
+        if (response == "Meta deletada com sucesso!") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 1,
+            text: "Meta deletada com sucesso!",
           });
-        }, 4000);
-      }
 
-      if (response == "Goal not found") {
-        setControlToast({
-          showToast: true,
-          type: 2,
-          text: "Meta não encontrada!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "Goal not found") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 2,
+            text: "Meta não encontrada!",
           });
-        }, 4000);
-      }
 
-      if (response == "Internal Server Error") {
-        setControlToast({
-          showToast: true,
-          type: 3,
-          text: "Erro no servidor!",
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response == "Internal Server Error") {
           setControlToast({
-            showToast: false,
+            showToast: true,
+            type: 3,
+            text: "Erro no servidor!",
           });
-        }, 4000);
-      }
+
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
+      });
     });
+
+    setShowDialog(false);
+  };
+
+  const openDialog = (idGaol: any, goal: any) => {
+    setShowDialog(true);
+    setIdToDelete(idGaol);
+    setItemToDelete(goal);
+    setOpenMenuRow(!openMenuRow);
   };
 
   const resultSumCurrentValue = goals?.reduce(
@@ -180,6 +198,16 @@ export default function Goal() {
         text={controlToast?.text}
         showToast={controlToast?.showToast}
         type={controlToast?.type}
+      />
+
+      <Dialog
+        showDialog={showDialog}
+        setShowDialog={setShowDialog}
+        action={goalDelete}
+        isPending={isPending}
+        idToDelete={idToDelete}
+        itemToDelete={itemToDelete}
+        table="goal"
       />
 
       {isAuthorized ? (
@@ -336,7 +364,7 @@ export default function Goal() {
                               </div>
                               <div
                                 className="flex items-center gap-2 px-1.5 rounded-sm hover:bg-PRIMARY hover:cursor-pointer"
-                                onClick={() => goalDelete(goal.idGoal)}
+                                onClick={() => openDialog(goal.idGoal, goal)}
                               >
                                 <FaTrashAlt className="w-3 h-3" /> Deletar
                               </div>
