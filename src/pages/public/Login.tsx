@@ -82,7 +82,7 @@ export default function Login() {
   };
 
   return (
-    <div className="h-screen flex justify-center items-center">
+    <div className="h-screen flex flex-col justify-center items-center">
       <Toast
         text={controlToast?.text}
         showToast={controlToast?.showToast}
@@ -92,7 +92,10 @@ export default function Login() {
         <div className="flex flex-col items-center justify-center max-md:hidden">
           <div className="flex items-center justify-center w-[300px]">
             <ControlSVG fill="#171717" className="w-10 h-10" />
-            <h1 className="text-center font-bold text-3xl">Control</h1>
+            <div className="flex flex-col">
+              <h1 className="text-center font-bold text-3xl">Control</h1>
+              <p className="-mt-2 text-end text-[0.8rem]">by RDEV</p>
+            </div>
           </div>
         </div>
         <div className="flex justify-center items-center rounded-2xl md:w-[400px] bg-PRIMARY border border-QUATERNARY text-TERTIARY shadow-BACKGROUND shadow-lg">
@@ -156,6 +159,10 @@ export default function Login() {
             </p>
           </div>
         </div>
+      </div>
+
+      <div>
+        <p className="text-TERTIARY">© RDEV 2025</p>
       </div>
     </div>
   );
