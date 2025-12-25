@@ -1,7 +1,6 @@
 import {
   createContext,
   useState,
-  useTransition,
   type Dispatch,
   type SetStateAction,
 } from "react";
@@ -23,12 +22,11 @@ type AmountToPay = {
 
 interface IAmountToPayContext {
   AmountsToPay: AmountToPay[] | null;
-  getAmountsToPay: () => Promise<void> | void;
-  createAmountToPay: (data: any) => Promise<void> | void;
-  updateAmountToPay: (idAmountToPay: any, data: any) => Promise<void> | void;
-  deleteAmountToPay: (idAmountToPay: any) => Promise<void> | void;
+  getAmountsToPay: () => Promise<string | void>;
+  createAmountToPay: (data: any) => Promise<string | void>;
+  updateAmountToPay: (idAmountToPay: any, data: any) => Promise<string | void>;
+  deleteAmountToPay: (idAmountToPay: any) => Promise<string | void>;
   setAmountToPay: Dispatch<SetStateAction<AmountToPay[] | null>>;
-  isPending: boolean;
   isAuthorized: boolean;
 }
 
@@ -48,88 +46,129 @@ export const AmountToPayProvider = ({
 
   const [AmountsToPay, setAmountToPay] = useState<AmountToPay[] | null>([]);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
-  const getAmountsToPay = async () => {
-    await auth().then((isAuth) => {
+  const getAmountsToPay = async (): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
+
       if (storedUser && storedToken && isAuth) {
         let user = JSON.parse(storedUser);
 
-        startTransition(async () => {
-          try {
-            const response = await axios.get(
-              `http://localhost:3000/v1/amounttopay/${user?.idUser}`
-            );
+        try {
+          const response = await axios.get(
+            `http://localhost:3000/v1/amounttopay/${user?.idUser}`
+          );
+
+          if (response.data && response.status == 200) {
             setAmountToPay(response.data);
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response.data);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
       } else {
         navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
-  const createAmountToPay = async (data: any) => {
-    await auth().then((isAuth) => {
-      if (storedUser && storedToken && isAuth) {
-        startTransition(async () => {
-          try {
-            await axios.post(`http://localhost:3000/v1/amounttopay`, data);
+  const createAmountToPay = async (data: any): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
 
+      if (storedUser && storedToken && isAuth) {
+        try {
+          const response = await axios.post(
+            `http://localhost:3000/v1/amounttopay`,
+            data
+          );
+
+          if (response.data && response.status == 201) {
+            message = "Valor criado com sucesso!";
             getAmountsToPay();
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
-  const updateAmountToPay = async (idAmountToPay: any, data: any) => {
-    await auth().then((isAuth) => {
+  const updateAmountToPay = async (
+    idAmountToPay: any,
+    data: any
+  ): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
+
       if (storedUser && storedToken && isAuth) {
         let user = JSON.parse(storedUser);
 
-        startTransition(async () => {
-          try {
-            await axios.put(
-              `http://localhost:3000/v1/amounttopay/${idAmountToPay}/${user?.idUser}`,
-              data
-            );
+        try {
+          const response = await axios.put(
+            `http://localhost:3000/v1/amounttopay/${idAmountToPay}/${user?.idUser}`,
+            data
+          );
 
+          if (response.data && response.status == 200) {
+            message = "Valor atualizado com sucesso!";
             getAmountsToPay();
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
-  const deleteAmountToPay = async (idAmountToPay: any) => {
-    await auth().then((isAuth) => {
+  const deleteAmountToPay = async (
+    idAmountToPay: any
+  ): Promise<string | void> => {
+    const response = await auth().then(async (isAuth) => {
+      let message: string = "";
+
       if (storedUser && storedToken && isAuth) {
         let user = JSON.parse(storedUser);
 
-        startTransition(async () => {
-          try {
-            await axios.delete(
-              `http://localhost:3000/v1/amounttopay/${idAmountToPay}/${user?.idUser}`
-            );
+        try {
+          const response = await axios.delete(
+            `http://localhost:3000/v1/amounttopay/${idAmountToPay}/${user?.idUser}`
+          );
 
+          if (response.data && response.status == 200) {
+            message = "Valor deletado com sucesso!";
             getAmountsToPay();
             setIsAuthorized(true);
-          } catch (error: any) {
-            console.log(error.response);
           }
-        });
+        } catch (error: any) {
+          message = error.response?.data.message;
+        }
+      } else {
+        navigation("/");
       }
+
+      return message;
     });
+
+    return response;
   };
 
   return (
@@ -141,7 +180,6 @@ export const AmountToPayProvider = ({
         deleteAmountToPay,
         setAmountToPay,
         AmountsToPay,
-        isPending,
         isAuthorized,
       }}
     >

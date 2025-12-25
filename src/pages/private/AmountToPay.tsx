@@ -12,10 +12,14 @@ import InfoCard from "../../components/InfoCard";
 import { MdOutlineFolderOff } from "react-icons/md";
 
 import { AmountToPayContext } from "../../context/AmountToPayContext";
+import type { ToastDTO } from "../../dtos/ToastDTO";
+import Toast from "../../components/Toast";
 
 export default function AmountToPay() {
   const { getAmountsToPay, deleteAmountToPay, AmountsToPay, isAuthorized } =
     useContext(AmountToPayContext);
+
+  const [controlToast, setControlToast] = useState<ToastDTO>();
 
   const [amountToPayList, setAmountToPayList] = useState<any>([]);
   const [selectOption, setSelectOption] = useState("Nome");
@@ -67,16 +71,90 @@ export default function AmountToPay() {
     }
   };
 
+  const getAllAmountsToPay = async () => {
+    await getAmountsToPay().then((response) => {
+      if (response == "Amount to pay not found") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Valores a pagar não encontrados!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Internal Server Error") {
+        setControlToast({
+          showToast: true,
+          type: 3,
+          text: "Erro no servidor!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+    });
+  };
+
   useEffect(() => {
-    getAmountsToPay();
+    getAllAmountsToPay();
   }, []);
 
   useEffect(() => {
     setAmountToPayList(AmountsToPay?.reverse());
   }, [AmountsToPay]);
 
-  const amountToPayDelete = (idAmountToPay: any) => {
-    deleteAmountToPay(idAmountToPay);
+  const amountToPayDelete = async (idAmountToPay: any) => {
+    await deleteAmountToPay(idAmountToPay).then((response) => {
+      if (response == "Valor deletado com sucesso!") {
+        setControlToast({
+          showToast: true,
+          type: 1,
+          text: "Valor deletado com sucesso!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Amount to pay not found") {
+        setControlToast({
+          showToast: true,
+          type: 2,
+          text: "Valor não encontrado!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+
+      if (response == "Internal Server Error") {
+        setControlToast({
+          showToast: true,
+          type: 3,
+          text: "Erro no servidor!",
+        });
+
+        setTimeout(() => {
+          setControlToast({
+            showToast: false,
+          });
+        }, 4000);
+      }
+    });
   };
 
   const resultSumValue = AmountsToPay?.reduce(
@@ -114,6 +192,11 @@ export default function AmountToPay() {
 
   return (
     <>
+      <Toast
+        text={controlToast?.text}
+        showToast={controlToast?.showToast}
+        type={controlToast?.type}
+      />
       {isAuthorized ? (
         <div className="text-TERTIARY p-6 max-md:px-2">
           {openModal && (
@@ -122,6 +205,7 @@ export default function AmountToPay() {
               button={buttonModal}
               setOpenModal={setOpenModal}
               amountToPayToModal={amountToPayToModal}
+              setControlToast={setControlToast}
             />
           )}
 
@@ -135,6 +219,7 @@ export default function AmountToPay() {
             <div>
               <Button
                 value="Criar novo valor"
+                type="button"
                 onClick={() => modal("Criar novo valor", "Criar valor", null)}
               />
             </div>
@@ -183,10 +268,10 @@ export default function AmountToPay() {
                   onChange={(e: any) => searchAmountToPay(e.target.value)}
                 />
               </div>
-              <div className="border border-QUATERNARY rounded-xl w-full overflow-auto">
+              <div className="border border-QUATERNARY rounded-xl w-full overflow-auto max-h-[70dvh]">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-QUATERNARY bg-QUATERNARY max-h-[70dvh]">
+                    <tr className="border-b border-QUATERNARY bg-QUATERNARY">
                       <th className="p-4 text-start sticky top-0 bg-QUATERNARY z-1"></th>
                       <th className="p-4 text-start sticky top-0 bg-QUATERNARY">
                         Quando pagará
