@@ -105,7 +105,7 @@ export default function Dialog({
   return (
     <>
       <div
-        className={`flex justify-center items-center w-full h-full top-0 left-0 z-10 bg-PRIMARY/70 ${
+        className={`flex justify-center items-center w-full h-full top-0 left-0 z-10 bg-PRIMARY/70 px-3 ${
           showDialog ? "fixed" : "hidden"
         }`}
       >

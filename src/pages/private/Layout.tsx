@@ -31,7 +31,7 @@ export default function Layout() {
 
   const iconStyle = "w-[20px] h-[20px]";
 
-  const links = [
+  const linksPersonal = [
     {
       link: "goal",
       title: "Metas",
@@ -47,6 +47,9 @@ export default function Layout() {
       title: "Despesas",
       icon: <FaArrowTrendDown className={`${iconStyle}`} />,
     },
+  ];
+
+  const linksInterpersonal = [
     {
       link: "amounttoreceive",
       title: "Valores a receber",
@@ -85,14 +88,20 @@ export default function Layout() {
   return (
     <>
       <div className="h-screen flex">
-        <div className={`fixed z-2 bg-BACKGROUND/70 w-full h-screen md:hidden ${openMenu ? "max-md:opacity-100 max-md:fixed" : "max-md:opacity-0 max-md:hidden"}`}></div>
+        <div
+          className={`fixed z-2 bg-BACKGROUND/70 w-full h-screen md:hidden ${
+            openMenu
+              ? "max-md:opacity-100 max-md:fixed"
+              : "max-md:opacity-0 max-md:hidden"
+          }`}
+        ></div>
 
         <div className="text-TERTIARY fixed flex justify-between items-center px-2 bg-PRIMARY w-full z-10 md:hidden">
           <div className="flex items-center my-4">
             <ControlSVG fill="#e5e5e5" className="w-10 h-10" />
             <h1 className="text-center font-bold text-3xl">Control</h1>
           </div>
-          <div className="pr-1" onClick={()=>setOpenMenu(!openMenu)}>
+          <div className="pr-1" onClick={() => setOpenMenu(!openMenu)}>
             {openMenu ? (
               <CgCloseO className="w-10 h-9" />
             ) : (
@@ -102,7 +111,9 @@ export default function Layout() {
         </div>
 
         <div
-          className={`flex flex-col justify-between max-lg:overflow-x-clip max-lg:overflow-y-auto max-lg:w-[295px] bg-PRIMARY text-TERTIARY rounded-r-xl border-r border-QUATERNARY max-md:fixed max-md:right-0 max-md:w-fit max-md:z-2 max-md:rounded-none max-md:border duration-300 ease-linear ${openMenu ? "max-md:top-17" : "max-md:-top-100"} `}
+          className={`flex flex-col justify-between max-lg:overflow-x-clip max-lg:overflow-y-auto max-lg:w-[295px] bg-PRIMARY text-TERTIARY rounded-r-xl border-r border-QUATERNARY max-md:fixed max-md:right-0 max-md:w-fit max-md:z-2 max-md:rounded-none max-md:border duration-300 ease-linear ${
+            openMenu ? "max-md:top-17" : "max-md:-top-120"
+          } `}
         >
           <div className="mx-2">
             <div className="flex items-center justify-center my-6.5 max-md:hidden">
@@ -111,22 +122,49 @@ export default function Layout() {
             </div>
             <hr className="mb-5 max-md:border-0" />
             <nav className="flex flex-col w-52 gap-4">
-              {links.map((items, index) => {
-                return (
-                  <NavLink
-                    key={index}
-                    onClick={()=>setOpenMenu(!openMenu)}
-                    to={items.link}
-                    className={({ isActive }) =>
-                      isActive
-                        ? `bg-TERTIARY text-PRIMARY ${style}`
-                        : `hover:bg-SECONDARY ${style}`
-                    }
-                  >
-                    {items.icon} {items.title}
-                  </NavLink>
-                );
-              })}
+              <div className="flex flex-col w-52 gap-4">
+                <div className="bg-BACKGROUND text-center rounded-lg font-medium">
+                  Pessoal
+                </div>
+                {linksPersonal.map((items, index) => {
+                  return (
+                    <NavLink
+                      key={index}
+                      onClick={() => setOpenMenu(!openMenu)}
+                      to={items.link}
+                      className={({ isActive }) =>
+                        isActive
+                          ? `bg-TERTIARY text-PRIMARY ${style}`
+                          : `hover:bg-SECONDARY ${style}`
+                      }
+                    >
+                      {items.icon} {items.title}
+                    </NavLink>
+                  );
+                })}
+              </div>
+
+              <div className="flex flex-col w-52 gap-4">
+                <div className="bg-BACKGROUND text-center rounded-lg font-medium mt-5">
+                  Interpessoal
+                </div>
+                {linksInterpersonal.map((items, index) => {
+                  return (
+                    <NavLink
+                      key={index}
+                      onClick={() => setOpenMenu(!openMenu)}
+                      to={items.link}
+                      className={({ isActive }) =>
+                        isActive
+                          ? `bg-TERTIARY text-PRIMARY ${style}`
+                          : `hover:bg-SECONDARY ${style}`
+                      }
+                    >
+                      {items.icon} {items.title}
+                    </NavLink>
+                  );
+                })}
+              </div>
             </nav>
           </div>
           <div className="flex flex-col items-center justify-center gap-3 mb-6 mt-15">
