@@ -5,9 +5,9 @@ import {
   type SetStateAction,
 } from "react";
 import { useNavigate } from "react-router";
-import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "./AuthContext";
+import api from "../axios";
 
 type Goal = {
   idGoal: number;
@@ -50,9 +50,7 @@ export const GoalProvider = ({ children }: { children: React.ReactNode }) => {
         let user = JSON.parse(storedUser);
 
         try {
-          const response = await axios.get(
-            `http://localhost:3000/v1/goal/${user?.idUser}`
-          );
+          const response = await api.get(`/v1/goal/${user?.idUser}`);
           if (response.data && response.status == 200) {
             setGoals(response.data);
             setIsAuthorized(true);
@@ -76,10 +74,7 @@ export const GoalProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (storedUser && storedToken && isAuth) {
         try {
-          const response = await axios.post(
-            `http://localhost:3000/v1/goal`,
-            data
-          );
+          const response = await api.post(`/v1/goal`, data);
 
           if (response.data && response.status == 201) {
             message = "Meta criada com sucesso!";
@@ -107,8 +102,8 @@ export const GoalProvider = ({ children }: { children: React.ReactNode }) => {
         let user = JSON.parse(storedUser);
 
         try {
-          const response = await axios.put(
-            `http://localhost:3000/v1/goal/${idGoal}/${user?.idUser}`,
+          const response = await api.put(
+            `/v1/goal/${idGoal}/${user?.idUser}`,
             data
           );
 
@@ -138,8 +133,8 @@ export const GoalProvider = ({ children }: { children: React.ReactNode }) => {
         let user = JSON.parse(storedUser);
 
         try {
-          const response = await axios.delete(
-            `http://localhost:3000/v1/goal/${idGoal}/${user?.idUser}`
+          const response = await api.delete(
+            `/v1/goal/${idGoal}/${user?.idUser}`
           );
 
           if (response.data && response.status == 200) {

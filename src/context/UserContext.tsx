@@ -1,6 +1,6 @@
-import axios from "axios";
 import { useNavigate } from "react-router";
 import { createContext, useEffect, useState } from "react";
+import api from "../axios";
 
 type User = {
   idUser: number;
@@ -38,7 +38,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     let message: string = "";
 
     try {
-      const response = await axios.post("http://localhost:3000/login", data);
+      const response = await api.post("/login", data);
 
       const loggedUser = response.data?.user;
       const authToken = response.data?.token;
@@ -63,7 +63,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     let message: string = "";
 
     try {
-      const response = await axios.post("http://localhost:3000/register", data);
+      const response = await api.post("/register", data);
 
       if (response.data && response.status == 201) {
         message = "Cadastro criado com sucesso!";
@@ -79,9 +79,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <UserContext.Provider
-      value={{ login, user, token, register }}
-    >
+    <UserContext.Provider value={{ login, user, token, register }}>
       {children}
     </UserContext.Provider>
   );

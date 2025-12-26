@@ -5,9 +5,9 @@ import {
   type SetStateAction,
 } from "react";
 import { useNavigate } from "react-router";
-import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "./AuthContext";
+import api from "../axios";
 
 type Revenue = {
   idRevenue: number;
@@ -54,9 +54,7 @@ export const RevenueProvider = ({
         let user = JSON.parse(storedUser);
 
         try {
-          const response = await axios.get(
-            `http://localhost:3000/v1/revenue/${user?.idUser}`
-          );
+          const response = await api.get(`/v1/revenue/${user?.idUser}`);
 
           if (response.data && response.status == 200) {
             setRevenue(response.data);
@@ -81,10 +79,7 @@ export const RevenueProvider = ({
 
       if (storedUser && storedToken && isAuth) {
         try {
-          const response = await axios.post(
-            `http://localhost:3000/v1/revenue`,
-            data
-          );
+          const response = await api.post(`/v1/revenue`, data);
 
           if (response.data && response.status == 201) {
             message = "Receita criada com sucesso!";
@@ -104,7 +99,10 @@ export const RevenueProvider = ({
     return response;
   };
 
-  const updateRevenue = async (idRevenue: any, data: any): Promise<string | void> => {
+  const updateRevenue = async (
+    idRevenue: any,
+    data: any
+  ): Promise<string | void> => {
     const response = await auth().then(async (isAuth) => {
       let message: string = "";
 
@@ -112,8 +110,8 @@ export const RevenueProvider = ({
         let user = JSON.parse(storedUser);
 
         try {
-          const response = await axios.put(
-            `http://localhost:3000/v1/revenue/${idRevenue}/${user?.idUser}`,
+          const response = await api.put(
+            `/v1/revenue/${idRevenue}/${user?.idUser}`,
             data
           );
 
@@ -143,8 +141,8 @@ export const RevenueProvider = ({
         let user = JSON.parse(storedUser);
 
         try {
-          const response = await axios.delete(
-            `http://localhost:3000/v1/revenue/${idRevenue}/${user?.idUser}`
+          const response = await api.delete(
+            `/v1/revenue/${idRevenue}/${user?.idUser}`
           );
 
           if (response.data && response.status == 200) {

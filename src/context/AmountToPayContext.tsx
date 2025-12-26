@@ -5,9 +5,9 @@ import {
   type SetStateAction,
 } from "react";
 import { useNavigate } from "react-router";
-import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "./AuthContext";
+import api from "../axios";
 
 type AmountToPay = {
   idAmountToPay: number;
@@ -55,9 +55,7 @@ export const AmountToPayProvider = ({
         let user = JSON.parse(storedUser);
 
         try {
-          const response = await axios.get(
-            `http://localhost:3000/v1/amounttopay/${user?.idUser}`
-          );
+          const response = await api.get(`/v1/amounttopay/${user?.idUser}`);
 
           if (response.data && response.status == 200) {
             setAmountToPay(response.data);
@@ -82,10 +80,7 @@ export const AmountToPayProvider = ({
 
       if (storedUser && storedToken && isAuth) {
         try {
-          const response = await axios.post(
-            `http://localhost:3000/v1/amounttopay`,
-            data
-          );
+          const response = await api.post(`/v1/amounttopay`, data);
 
           if (response.data && response.status == 201) {
             message = "Valor criado com sucesso!";
@@ -116,8 +111,8 @@ export const AmountToPayProvider = ({
         let user = JSON.parse(storedUser);
 
         try {
-          const response = await axios.put(
-            `http://localhost:3000/v1/amounttopay/${idAmountToPay}/${user?.idUser}`,
+          const response = await api.put(
+            `/v1/amounttopay/${idAmountToPay}/${user?.idUser}`,
             data
           );
 
@@ -149,8 +144,8 @@ export const AmountToPayProvider = ({
         let user = JSON.parse(storedUser);
 
         try {
-          const response = await axios.delete(
-            `http://localhost:3000/v1/amounttopay/${idAmountToPay}/${user?.idUser}`
+          const response = await api.delete(
+            `/v1/amounttopay/${idAmountToPay}/${user?.idUser}`
           );
 
           if (response.data && response.status == 200) {

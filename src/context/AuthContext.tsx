@@ -1,6 +1,6 @@
 import { createContext } from "react";
 import { useNavigate } from "react-router";
-import axios from "axios";
+import api from "../axios";
 
 interface IAuthContext {
   auth: () => Promise<boolean>;
@@ -14,13 +14,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const storedToken = localStorage.getItem("token");
 
   const auth = async () => {
-    let isAuth: boolean = false
+    let isAuth: boolean = false;
 
     if (storedToken) {
       let token = storedToken;
 
       try {
-        const response = await axios.get(`http://localhost:3000/auth`, {
+        const response = await api.get(`/auth`, {
           headers: {
             authorization: token,
           },
@@ -36,7 +36,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           navigation("/");
         }
       } catch (error: any) {
-
         if (
           (error.response.status == 401 &&
             error.response?.data.message == "Authorization required") ||
@@ -54,7 +53,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       navigation("/");
     }
 
-    return isAuth
+    return isAuth;
   };
 
   return (
