@@ -5,8 +5,6 @@ import {
   type SetStateAction,
 } from "react";
 import { useNavigate } from "react-router";
-import { useContext } from "react";
-import { AuthContext } from "./AuthContext";
 import api from "../axios";
 
 type AmountToReceive = {
@@ -43,8 +41,6 @@ export const AmountToReceiveProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { auth } = useContext(AuthContext);
-
   const navigation = useNavigate();
 
   const storedUser = localStorage.getItem("user");
@@ -55,123 +51,131 @@ export const AmountToReceiveProvider = ({
   >([]);
   const [isAuthorized, setIsAuthorized] = useState(false);
 
+  const checkAuthReturn = (error: any) => {
+    if (
+      (error.response.status == 401 &&
+        error.response?.data.message == "Authorization required") ||
+      (error.response.status == 400 &&
+        error.response.data.message === "Unauthorized") ||
+      (error.response.status == 400 &&
+        error.response.data.message.name === "TokenExpiredError") ||
+      (error.response.status == 400 &&
+        error.response.data.message.message === "invalid token") ||
+      error.response?.data.message == undefined
+    ) {
+      navigation("/");
+    } else {
+      return error.response?.data.message;
+    }
+  };
+
   const getAmountsToReceive = async (): Promise<string | void> => {
-    const response = await auth().then(async (isAuth) => {
-      let message: string = "";
+    let message: string = "";
 
-      if (storedUser && storedToken && isAuth) {
-        let user = JSON.parse(storedUser);
+    if (storedUser && storedToken) {
+      let user = JSON.parse(storedUser);
 
-        try {
-          const response = await api.get(`/v1/amounttoreceive/${user?.idUser}`);
+      try {
+        const response = await api.get(`/v1/amounttoreceive/${user?.idUser}`, {
+          headers: { Authorization: storedToken },
+        });
 
-          if (response.data && response.status == 200) {
-            setAmountToReceive(response.data);
-            setIsAuthorized(true);
-          }
-        } catch (error: any) {
-          message = error.response?.data.message;
+        if (response.data && response.status == 200) {
+          setAmountToReceive(response.data);
+          setIsAuthorized(true);
         }
-      } else {
-        navigation("/");
+      } catch (error: any) {
+        message = checkAuthReturn(error);
       }
+    } else {
+      navigation("/");
+    }
 
-      return message;
-    });
-
-    return response;
+    return message;
   };
 
   const createAmountToReceive = async (data: any): Promise<string | void> => {
-    const response = await auth().then(async (isAuth) => {
-      let message: string = "";
+    let message: string = "";
 
-      if (storedUser && storedToken && isAuth) {
-        try {
-          const response = await api.post(`/v1/amounttoreceive`, data);
+    if (storedUser && storedToken) {
+      try {
+        const response = await api.post(`/v1/amounttoreceive`, data, {
+          headers: { Authorization: storedToken },
+        });
 
-          if (response.data && response.status == 201) {
-            message = "Valor criado com sucesso!";
-            getAmountsToReceive();
-            setIsAuthorized(true);
-          }
-        } catch (error: any) {
-          message = error.response?.data.message;
+        if (response.data && response.status == 201) {
+          message = "Valor criado com sucesso!";
+          getAmountsToReceive();
+          setIsAuthorized(true);
         }
-      } else {
-        navigation("/");
+      } catch (error: any) {
+        message = checkAuthReturn(error);
       }
+    } else {
+      navigation("/");
+    }
 
-      return message;
-    });
-
-    return response;
+    return message;
   };
 
   const updateAmountToReceive = async (
     idAmountToReceive: any,
     data: any
   ): Promise<string | void> => {
-    const response = await auth().then(async (isAuth) => {
-      let message: string = "";
+    let message: string = "";
 
-      if (storedUser && storedToken && isAuth) {
-        let user = JSON.parse(storedUser);
+    if (storedUser && storedToken) {
+      let user = JSON.parse(storedUser);
 
-        try {
-          const response = await api.put(
-            `/v1/amounttoreceive/${idAmountToReceive}/${user?.idUser}`,
-            data
-          );
+      try {
+        const response = await api.put(
+          `/v1/amounttoreceive/${idAmountToReceive}/${user?.idUser}`,
+          data,
+          { headers: { Authorization: storedToken } }
+        );
 
-          if (response.data && response.status == 200) {
-            message = "Valor atualizado com sucesso!";
-            getAmountsToReceive();
-            setIsAuthorized(true);
-          }
-        } catch (error: any) {
-          message = error.response?.data.message;
+        if (response.data && response.status == 200) {
+          message = "Valor atualizado com sucesso!";
+          getAmountsToReceive();
+          setIsAuthorized(true);
         }
-      } else {
-        navigation("/");
+      } catch (error: any) {
+        message = checkAuthReturn(error);
       }
+    } else {
+      navigation("/");
+    }
 
-      return message;
-    });
-
-    return response;
+    return message;
   };
 
   const deleteAmountToReceive = async (
     idAmountToReceive: any
   ): Promise<string | void> => {
-    const response = await auth().then(async (isAuth) => {
-      let message: string = "";
+    let message: string = "";
 
-      if (storedUser && storedToken && isAuth) {
-        let user = JSON.parse(storedUser);
+    if (storedUser && storedToken) {
+      let user = JSON.parse(storedUser);
 
-        try {
-          const response = await api.delete(
-            `/v1/amounttoreceive/${idAmountToReceive}/${user?.idUser}`
-          );
+      try {
+        const response = await api.delete(
+          `/v1/amounttoreceive/${idAmountToReceive}/${user?.idUser}`,
+          { headers: { Authorization: storedToken } }
+        );
 
-          if (response.data && response.status == 200) {
-            message = "Valor deletado com sucesso!";
-            getAmountsToReceive();
-            setIsAuthorized(true);
-          }
-        } catch (error: any) {
-          message = error.response?.data.message;
+        if (response.data && response.status == 200) {
+          message = "Valor deletado com sucesso!";
+          getAmountsToReceive();
+          setIsAuthorized(true);
         }
-      } else {
-        navigation("/");
+      } catch (error: any) {
+        message = checkAuthReturn(error);
       }
+    } else {
+      navigation("/");
+    }
 
-      return message;
-    });
-
-    return response;
+    return message;
   };
 
   return (

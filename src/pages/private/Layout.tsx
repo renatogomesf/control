@@ -4,10 +4,9 @@ import { GiReceiveMoney, GiPayMoney } from "react-icons/gi";
 import { FaArrowTrendUp, FaArrowTrendDown } from "react-icons/fa6";
 import { CgMenuRound, CgCloseO } from "react-icons/cg";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "./../../context/UserContext";
 import { FiLogOut } from "react-icons/fi";
-import { AuthContext } from "../../context/AuthContext";
 import { GoalContext } from "../../context/GoalContext";
 import { RevenueContext } from "../../context/RevenueContext";
 import { ExpenseContext } from "../../context/ExpenseContext";
@@ -16,8 +15,6 @@ import { AmountToPayContext } from "./../../context/AmountToPayContext";
 import ControlSVG from "../../components/IconControl";
 
 export default function Layout() {
-  const { auth } = useContext(AuthContext);
-
   const { user } = useContext(UserContext);
   const { setGoals } = useContext(GoalContext);
   const { setRevenue } = useContext(RevenueContext);
@@ -75,15 +72,6 @@ export default function Layout() {
     setAmountToReceive([]);
     setAmountToPay([]);
   };
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const storedToken = localStorage.getItem("token");
-
-    if (!storedUser && !storedToken) {
-      auth();
-    }
-  }, []);
 
   return (
     <>
