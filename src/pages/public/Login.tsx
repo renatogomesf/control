@@ -2,13 +2,15 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import ControlSVG from "../../components/IconControl";
 import Toast from "../../components/Toast";
-import { useContext, useState } from "react";
+import { useContext, useState, useTransition } from "react";
 import { Link } from "react-router";
 import { UserContext } from "../../context/UserContext";
 import type { ToastDTO } from "../../dtos/ToastDTO";
 
 export default function Login() {
   const { login } = useContext(UserContext);
+
+  const [isPending, startTransition] = useTransition();
 
   const [emailAlert, setEmailAlert] = useState(false);
   const [passwordAlert, setPasswordAlert] = useState(false);
@@ -36,48 +38,50 @@ export default function Login() {
       password: password,
     };
 
-    await login(data).then((response) => {
-      if (response === "Incorrect email or password") {
-        setControlToast({
-          text: "E-mail ou senha incorretos",
-          showToast: true,
-          type: 2,
-        });
-
-        setTimeout(() => {
+    startTransition(async () => {
+      await login(data).then((response) => {
+        if (response === "Incorrect email or password") {
           setControlToast({
-            showToast: false,
+            text: "E-mail ou senha incorretos",
+            showToast: true,
+            type: 2,
           });
-        }, 4000);
-      }
 
-      if (response === "All fields are required") {
-        setControlToast({
-          text: "Preencha todos os campos!",
-          showToast: true,
-          type: 2,
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response === "All fields are required") {
           setControlToast({
-            showToast: false,
+            text: "Preencha todos os campos!",
+            showToast: true,
+            type: 2,
           });
-        }, 4000);
-      }
 
-      if (response === "Internal Server Error") {
-        setControlToast({
-          text: "Erro interno no servidor!",
-          showToast: true,
-          type: 3,
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response === "Internal Server Error") {
           setControlToast({
-            showToast: false,
+            text: "Erro interno no servidor!",
+            showToast: true,
+            type: 3,
           });
-        }, 4000);
-      }
+
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
+      });
     });
   };
 
@@ -148,7 +152,12 @@ export default function Login() {
                 )}
               </div>
 
-              <Button className="mt-5" value="Login" type="submit" />
+              <Button
+                className="mt-5"
+                value="Login"
+                type="submit"
+                isPending={isPending}
+              />
             </form>
 
             <p className="text-center my-5 font-extralight">

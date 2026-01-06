@@ -1,13 +1,15 @@
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { Link } from "react-router";
-import { useContext, useState } from "react";
+import { useContext, useState, useTransition } from "react";
 import { UserContext } from "../../context/UserContext";
 import Toast from "../../components/Toast";
 import type { ToastDTO } from "../../dtos/ToastDTO";
 
 export default function Register() {
   const { register } = useContext(UserContext);
+
+  const [isPending, startTransition] = useTransition();
 
   const [nameAlert, setNameAlert] = useState(false);
   const [lastNameAlert, setLastNameAlert] = useState(false);
@@ -49,62 +51,64 @@ export default function Register() {
       password: password,
     };
 
-    await register(data).then((response) => {
-      if (response === "Internal Server Error") {
-        setControlToast({
-          text: "Erro interno no servidor!",
-          showToast: true,
-          type: 3,
-        });
-
-        setTimeout(() => {
+    startTransition(async () => {
+      await register(data).then((response) => {
+        if (response === "Internal Server Error") {
           setControlToast({
-            showToast: false,
+            text: "Erro interno no servidor!",
+            showToast: true,
+            type: 3,
           });
-        }, 4000);
-      }
 
-      if (response === "Email already registered") {
-        setControlToast({
-          text: "Este e-mail já está em uso!",
-          showToast: true,
-          type: 2,
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response === "Email already registered") {
           setControlToast({
-            showToast: false,
+            text: "Este e-mail já está em uso!",
+            showToast: true,
+            type: 2,
           });
-        }, 4000);
-      }
 
-      if (response === "All fields are required") {
-        setControlToast({
-          text: "Preencha todos os campos!",
-          showToast: true,
-          type: 2,
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response === "All fields are required") {
           setControlToast({
-            showToast: false,
+            text: "Preencha todos os campos!",
+            showToast: true,
+            type: 2,
           });
-        }, 4000);
-      }
 
-      if (response === "Cadastro criado com sucesso!") {
-        setControlToast({
-          text: "Cadastro criado com sucesso!",
-          showToast: true,
-          type: 1,
-        });
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
 
-        setTimeout(() => {
+        if (response === "Cadastro criado com sucesso!") {
           setControlToast({
-            showToast: false,
+            text: "Cadastro criado com sucesso!",
+            showToast: true,
+            type: 1,
           });
-        }, 4000);
-      }
+
+          setTimeout(() => {
+            setControlToast({
+              showToast: false,
+            });
+          }, 4000);
+        }
+      });
     });
   };
 
@@ -196,7 +200,12 @@ export default function Register() {
                 ""
               )}
             </div>
-            <Button className="mt-3" value="Cadastrar" type="submit" />
+            <Button
+              className="mt-3"
+              value="Cadastrar"
+              type="submit"
+              isPending={isPending}
+            />
           </form>
 
           <Link className="underline text-center mb-5 font-extralight" to={"/"}>
