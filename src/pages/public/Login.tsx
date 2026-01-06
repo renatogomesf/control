@@ -12,6 +12,8 @@ export default function Login() {
 
   const [isPending, startTransition] = useTransition();
 
+  const [isOpen, setIsOpen] = useState(true);
+
   const [emailAlert, setEmailAlert] = useState(false);
   const [passwordAlert, setPasswordAlert] = useState(false);
 
@@ -92,6 +94,58 @@ export default function Login() {
         showToast={controlToast?.showToast}
         type={controlToast?.type}
       />
+
+      <div
+        className={` bg-PRIMARY/70 w-full h-full z-10 flex justify-center items-center ${
+          isOpen ? "fixed" : "hidden"
+        }`}
+      >
+        <div className="bg-PRIMARY p-5 border border-QUATERNARY text-TERTIARY rounded-lg max-w-[290px] flex flex-col gap-8">
+          <div>
+            <h1 className="text-xl font-bold">Que bom ter você aqui! :)</h1>
+            <p className="font-extralight">Vamos começar!? 😀</p>
+          </div>
+          <div className="flex flex-col gap-2">
+            <p>
+              Você pode usar a conta padrão de teste que já está preenchida nos
+              campos.
+            </p>
+            <code>
+              <p>
+                <span className="font-bold">email:</span> teste@gmail.com
+              </p>
+              <p>
+                <span className="font-bold">senha:</span> 123456789
+              </p>
+            </code>
+            <p>
+              ou, se deseja, fique a vontade para criar a sua própria conta
+              clicando em "Cadastre-se" logo abaixo do botão para logar.
+            </p>
+            <p>
+              <span className="font-bold text-red-600">OBS:</span> a api é
+              hospedada no{" "}
+              <a
+                className="underline text-blue-400"
+                href="https://render.com/"
+                target="_blank"
+              >
+                Render
+              </a>{" "}
+              , logo, a primeira requisição (seja no login ou cadastro) demorará
+              para executar a ação. Mas é só esperar um pouco que as próximas requisições voltam ao normal. :)
+            </p>
+          </div>
+          <div>
+            <Button
+              className="mt-5"
+              type="button"
+              value="Vamos começar!"
+              onClick={() => setIsOpen(false)}
+            />
+          </div>
+        </div>
+      </div>
       <div className="flex bg-TERTIARY rounded-2xl m-2">
         <div className="flex flex-col items-center justify-center max-md:hidden">
           <div className="flex items-center justify-center w-[300px]">
@@ -121,6 +175,7 @@ export default function Login() {
                   label="Email"
                   isPassword={false}
                   name="email"
+                  defaultValue="teste@gmail.com"
                   onFocus={() => setEmailAlert(false)}
                 />
                 {emailAlert ? (
@@ -141,6 +196,7 @@ export default function Login() {
                   label="Senha"
                   isPassword={true}
                   name="password"
+                  defaultValue="123456789"
                   onFocus={() => setPasswordAlert(false)}
                 />
                 {passwordAlert ? (
