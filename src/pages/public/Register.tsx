@@ -97,7 +97,7 @@ export default function Register() {
 
         if (response === "Cadastro criado com sucesso!") {
           setControlToast({
-            text: "Cadastro criado com sucesso!",
+            text: "Cadastro criado com sucesso! Voltando para tela de login.",
             showToast: true,
             type: 1,
           });
@@ -119,7 +119,7 @@ export default function Register() {
         showToast={controlToast?.showToast}
         type={controlToast?.type}
       />
-      <div className="flex justify-center items-center rounded-3xl bg-PRIMARY border border-QUATERNARY m-2 w-[400px]">
+      <div className="flex justify-center items-center rounded-3xl bg-PRIMARY border border-QUATERNARY m-2 w-[450px]">
         <div className="flex flex-col gap-3 w-[85%]">
           <div className="my-5">
             <h1 className="text-xl font-bold">Cadastre-se</h1>
@@ -128,41 +128,43 @@ export default function Register() {
             </p>
           </div>
           <form action={submit} className="flex flex-col gap-6">
-            <div className="relative">
-              <Input
-                className={`w-full ${nameAlert ? "ring-3 ring-red-600" : ""}`}
-                type="text"
-                placeholder="Jhon"
-                label="Nome"
-                name="name"
-                onFocus={() => setNameAlert(false)}
-              />
-              {nameAlert ? (
-                <p className="absolute text-[0.7rem] mt-1 text-red-600">
-                  Campo Obrigatório!
-                </p>
-              ) : (
-                ""
-              )}
-            </div>
-            <div className="relative">
-              <Input
-                className={`w-full ${
-                  lastNameAlert ? "ring-3 ring-red-600" : ""
-                }`}
-                type="text"
-                placeholder="Doe"
-                label="Sobre nome"
-                name="lastName"
-                onFocus={() => setLastNameAlert(false)}
-              />
-              {lastNameAlert ? (
-                <p className="absolute text-[0.7rem] mt-1 text-red-600">
-                  Campo Obrigatório!
-                </p>
-              ) : (
-                ""
-              )}
+            <div className="flex gap-6 max-md:flex max-md:flex-col">
+              <div className="relative">
+                <Input
+                  className={`w-full ${nameAlert ? "ring-3 ring-red-600" : ""}`}
+                  type="text"
+                  placeholder="Jhon"
+                  label="Nome"
+                  name="name"
+                  onFocus={() => setNameAlert(false)}
+                />
+                {nameAlert ? (
+                  <p className="absolute text-[0.7rem] mt-1 text-red-600">
+                    Campo Obrigatório!
+                  </p>
+                ) : (
+                  ""
+                )}
+              </div>
+              <div className="relative">
+                <Input
+                  className={`w-full ${
+                    lastNameAlert ? "ring-3 ring-red-600" : ""
+                  }`}
+                  type="text"
+                  placeholder="Doe"
+                  label="Sobre nome"
+                  name="lastName"
+                  onFocus={() => setLastNameAlert(false)}
+                />
+                {lastNameAlert ? (
+                  <p className="absolute text-[0.7rem] mt-1 text-red-600">
+                    Campo Obrigatório!
+                  </p>
+                ) : (
+                  ""
+                )}
+              </div>
             </div>
             <div className="relative">
               <Input
